@@ -1,0 +1,108 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - navigation [ref=e3]:
+    - link "Logo" [ref=e5] [cursor=pointer]:
+      - /url: /
+      - img "Logo" [ref=e6]
+    - list [ref=e7]:
+      - listitem [ref=e8]:
+        - link "Home" [ref=e9] [cursor=pointer]:
+          - /url: /
+      - listitem [ref=e10]:
+        - link "Shop" [ref=e11] [cursor=pointer]:
+          - /url: /shop
+      - listitem [ref=e12]:
+        - link "Featured" [ref=e13] [cursor=pointer]:
+          - /url: /featured
+      - listitem [ref=e14]:
+        - link "Recommended" [ref=e15] [cursor=pointer]:
+          - /url: /recommended
+    - generic [ref=e16]:
+      - img "search" [ref=e17]:
+        - img [ref=e18]
+      - textbox "Search product..." [ref=e20]
+    - list [ref=e21]:
+      - listitem [ref=e22]:
+        - button "shopping" [ref=e23]:
+          - img "shopping" [ref=e25]:
+            - img [ref=e26]
+      - listitem [ref=e28]:
+        - link "Sign Up" [ref=e29] [cursor=pointer]:
+          - /url: /signup
+        - link "Sign In" [ref=e30] [cursor=pointer]:
+          - /url: /signin
+  - generic [ref=e31]:
+    - generic [ref=e32]:
+      - generic [ref=e33]:
+        - heading "My Basket ( 0 item)" [level=3] [ref=e34]:
+          - text: My Basket
+          - generic [ref=e35]: ( 0 item)
+        - text: Close
+        - button "Clear Basket" [disabled] [ref=e36]:
+          - generic [ref=e37]: Clear Basket
+      - heading "Your basket is empty" [level=5] [ref=e39]
+    - generic [ref=e40]:
+      - generic [ref=e41]:
+        - paragraph [ref=e42]: "Subtotal Amout:"
+        - heading "$0.00" [level=2] [ref=e43]
+      - button "Check Out" [disabled] [ref=e44]
+  - main [ref=e45]:
+    - generic [ref=e46]:
+      - generic [ref=e48]:
+        - heading "See everything with Clarity" [level=1] [ref=e49]:
+          - strong [ref=e50]: See
+          - text: everything with
+          - strong [ref=e51]: Clarity
+        - paragraph [ref=e52]: Buying eyewear should leave you happy and good-looking, with money in your pocket. Glasses, sunglasses, and contacts—we’ve got your eyes covered.
+        - link "Shop Now arrow-right" [ref=e53] [cursor=pointer]:
+          - /url: /shop
+          - text: Shop Now
+          - img "arrow-right" [ref=e54]:
+            - img [ref=e55]
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - heading "Featured Products" [level=1] [ref=e60]
+          - link "See All" [ref=e61] [cursor=pointer]:
+            - /url: /featured
+        - generic [ref=e62]:
+          - generic [ref=e65]:
+            - heading "Kredencijali" [level=2] [ref=e66]
+            - paragraph [ref=e67]: Sexbomb
+          - generic [ref=e70]:
+            - heading "ahmed" [level=2] [ref=e71]
+            - paragraph [ref=e72]: Sexbomb
+          - generic [ref=e75]:
+            - heading "sadas" [level=2] [ref=e76]
+            - paragraph [ref=e77]: Betsin Maalat
+      - generic [ref=e78]:
+        - generic [ref=e79]:
+          - heading "Recommended Products" [level=1] [ref=e80]
+          - link "See All" [ref=e81] [cursor=pointer]:
+            - /url: /recommended
+        - generic [ref=e82]:
+          - generic [ref=e85]:
+            - heading "davor" [level=2] [ref=e86]
+            - paragraph [ref=e87]: Salt Maalat
+          - generic [ref=e90]:
+            - heading "ahmed" [level=2] [ref=e91]
+            - paragraph [ref=e92]: Sexbomb
+          - generic [ref=e95]:
+            - heading "sadas" [level=2] [ref=e96]
+            - paragraph [ref=e97]: Betsin Maalat
+  - contentinfo [ref=e98]:
+    - strong [ref=e100]:
+      - generic [ref=e101]:
+        - text: Developed by
+        - link "JULIUS GUEVARRA" [ref=e102] [cursor=pointer]:
+          - /url: https://github.com/jgudo
+    - generic [ref=e103]:
+      - img "Footer logo" [ref=e104]
+      - heading "© 2026" [level=5] [ref=e105]
+    - strong [ref=e107]:
+      - generic [ref=e108]:
+        - text: Fork this project
+        - link "HERE" [ref=e109] [cursor=pointer]:
+          - /url: https://github.com/jgudo/ecommerce-react
+```

@@ -13,7 +13,7 @@
     "orientationAngle": 0,
     "orientationType": "landscape-primary"
   },
-  "timestamp": "2026-01-31T16:36:21.245Z",
+  "timestamp": "2026-01-31T17:10:49.992Z",
   "url": "http://localhost:3000/",
   "toolOptions": {
     "runOnly": {
@@ -2752,7 +2752,7 @@
     },
     {
       "id": "color-contrast",
-      "impact": "serious",
+      "impact": null,
       "tags": [
         "cat.color",
         "wcag2aa",
@@ -2769,6 +2769,106 @@
       "help": "Elements must meet minimum color contrast ratio thresholds",
       "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/color-contrast?application=playwright",
       "nodes": [
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#64748b",
+                "bgColor": "#ffffff",
+                "contrastRatio": 4.75,
+                "fontSize": "10.5pt (14px)",
+                "fontWeight": "bold",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 4.75"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<a aria-current=\"page\" class=\"navigation-menu-active\" href=\"/\">Home</a>",
+          "target": [
+            ".navigation-menu-active"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#64748b",
+                "bgColor": "#ffffff",
+                "contrastRatio": 4.75,
+                "fontSize": "10.5pt (14px)",
+                "fontWeight": "bold",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 4.75"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<a href=\"/shop\">Shop</a>",
+          "target": [
+            "li:nth-child(2) > a[href$=\"shop\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#64748b",
+                "bgColor": "#ffffff",
+                "contrastRatio": 4.75,
+                "fontSize": "10.5pt (14px)",
+                "fontWeight": "bold",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 4.75"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<a href=\"/featured\">Featured</a>",
+          "target": [
+            "li:nth-child(3) > a[href$=\"featured\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#64748b",
+                "bgColor": "#ffffff",
+                "contrastRatio": 4.75,
+                "fontSize": "10.5pt (14px)",
+                "fontWeight": "bold",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 4.75"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<a href=\"/recommended\">Recommended</a>",
+          "target": [
+            "li:nth-child(4) > a[href$=\"recommended\"]"
+          ]
+        },
         {
           "any": [
             {
@@ -2792,6 +2892,31 @@
           "html": "<input class=\"search-input searchbar-input\" placeholder=\"Search product...\" type=\"text\" value=\"\">",
           "target": [
             "input"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#ffffff",
+                "bgColor": "#065f46",
+                "contrastRatio": 7.68,
+                "fontSize": "9.0pt (12px)",
+                "fontWeight": "bold",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 7.68"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<a class=\"button button-small\" href=\"/signup\">Sign Up</a>",
+          "target": [
+            "a[href$=\"signup\"]"
           ]
         },
         {
@@ -2974,16 +3099,16 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#10182b",
-                "bgColor": "#f3f3f3",
-                "contrastRatio": 15.93,
+                "fgColor": "#1d2537",
+                "bgColor": "#f4f4f4",
+                "contrastRatio": 13.91,
                 "fontSize": "36.0pt (48px)",
                 "fontWeight": "normal",
                 "expectedContrastRatio": "3:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 15.93"
+              "message": "Element has sufficient color contrast of 13.91"
             }
           ],
           "all": [],
@@ -2999,16 +3124,16 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#10182b",
-                "bgColor": "#f3f3f3",
-                "contrastRatio": 15.93,
+                "fgColor": "#1d2537",
+                "bgColor": "#f4f4f4",
+                "contrastRatio": 13.91,
                 "fontSize": "36.0pt (48px)",
                 "fontWeight": "bold",
                 "expectedContrastRatio": "3:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 15.93"
+              "message": "Element has sufficient color contrast of 13.91"
             }
           ],
           "all": [],
@@ -3024,16 +3149,16 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#10182b",
-                "bgColor": "#f3f3f3",
-                "contrastRatio": 15.93,
+                "fgColor": "#1d2537",
+                "bgColor": "#f4f4f4",
+                "contrastRatio": 13.91,
                 "fontSize": "36.0pt (48px)",
                 "fontWeight": "bold",
                 "expectedContrastRatio": "3:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 15.93"
+              "message": "Element has sufficient color contrast of 13.91"
             }
           ],
           "all": [],
@@ -3049,16 +3174,16 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#334155",
-                "bgColor": "#f3f3f3",
-                "contrastRatio": 9.33,
+                "fgColor": "#3f4c5f",
+                "bgColor": "#f4f4f4",
+                "contrastRatio": 7.92,
                 "fontSize": "12.0pt (16px)",
                 "fontWeight": "bold",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 9.33"
+              "message": "Element has sufficient color contrast of 7.92"
             }
           ],
           "all": [],
@@ -3074,16 +3199,41 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#10182b",
+                "fgColor": "#ffffff",
+                "bgColor": "#156851",
+                "contrastRatio": 6.7,
+                "fontSize": "12.0pt (16px)",
+                "fontWeight": "bold",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 6.7"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<a class=\"button\" href=\"/shop\">",
+          "target": [
+            ".button[href$=\"shop\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#1d2537",
                 "bgColor": "#ffffff",
-                "contrastRatio": 17.68,
+                "contrastRatio": 15.3,
                 "fontSize": "24.0pt (32px)",
                 "fontWeight": "bold",
                 "expectedContrastRatio": "3:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 17.68"
+              "message": "Element has sufficient color contrast of 15.3"
             }
           ],
           "all": [],
@@ -3099,16 +3249,41 @@
             {
               "id": "color-contrast",
               "data": {
-                "fgColor": "#10182b",
+                "fgColor": "#156851",
                 "bgColor": "#ffffff",
-                "contrastRatio": 17.68,
+                "contrastRatio": 6.7,
+                "fontSize": "13.5pt (18px)",
+                "fontWeight": "bold",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 6.7"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<a href=\"/featured\">See All</a>",
+          "target": [
+            ".display-header > a[href$=\"featured\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#1d2537",
+                "bgColor": "#ffffff",
+                "contrastRatio": 15.3,
                 "fontSize": "24.0pt (32px)",
                 "fontWeight": "bold",
                 "expectedContrastRatio": "3:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 17.68"
+              "message": "Element has sufficient color contrast of 15.3"
             }
           ],
           "all": [],
@@ -3124,16 +3299,41 @@
             {
               "id": "color-contrast",
               "data": {
+                "fgColor": "#156851",
+                "bgColor": "#ffffff",
+                "contrastRatio": 6.7,
+                "fontSize": "13.5pt (18px)",
+                "fontWeight": "bold",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 6.7"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<a href=\"/recommended\">See All</a>",
+          "target": [
+            ".display-header > a[href$=\"recommended\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
                 "fgColor": "#334155",
-                "bgColor": "#f0f0f0",
-                "contrastRatio": 9.08,
+                "bgColor": "#f8fafc",
+                "contrastRatio": 9.89,
                 "fontSize": "9.0pt (12px)",
                 "fontWeight": "bold",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 9.08"
+              "message": "Element has sufficient color contrast of 9.89"
             }
           ],
           "all": [],
@@ -3149,16 +3349,41 @@
             {
               "id": "color-contrast",
               "data": {
+                "fgColor": "#065f46",
+                "bgColor": "#f8fafc",
+                "contrastRatio": 7.34,
+                "fontSize": "9.0pt (12px)",
+                "fontWeight": "bold",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 7.34"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<a href=\"https://github.com/jgudo\">JULIUS GUEVARRA</a>",
+          "target": [
+            "a[href$=\"jgudo\"]"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
                 "fgColor": "#0f172a",
-                "bgColor": "#f0f0f0",
-                "contrastRatio": 15.66,
+                "bgColor": "#f8fafc",
+                "contrastRatio": 17.06,
                 "fontSize": "10.0pt (13.28px)",
                 "fontWeight": "bold",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 15.66"
+              "message": "Element has sufficient color contrast of 17.06"
             }
           ],
           "all": [],
@@ -3175,15 +3400,15 @@
               "id": "color-contrast",
               "data": {
                 "fgColor": "#334155",
-                "bgColor": "#f0f0f0",
-                "contrastRatio": 9.08,
+                "bgColor": "#f8fafc",
+                "contrastRatio": 9.89,
                 "fontSize": "9.0pt (12px)",
                 "fontWeight": "bold",
                 "expectedContrastRatio": "4.5:1"
               },
               "relatedNodes": [],
               "impact": "serious",
-              "message": "Element has sufficient color contrast of 9.08"
+              "message": "Element has sufficient color contrast of 9.89"
             }
           ],
           "all": [],
@@ -3192,6 +3417,31 @@
           "html": "<span>Fork this project &nbsp;<a href=\"https://github.com/jgudo/ecommerce-react\">HERE</a></span>",
           "target": [
             ".footer-col-3 > strong > span"
+          ]
+        },
+        {
+          "any": [
+            {
+              "id": "color-contrast",
+              "data": {
+                "fgColor": "#065f46",
+                "bgColor": "#f8fafc",
+                "contrastRatio": 7.34,
+                "fontSize": "9.0pt (12px)",
+                "fontWeight": "bold",
+                "expectedContrastRatio": "4.5:1"
+              },
+              "relatedNodes": [],
+              "impact": "serious",
+              "message": "Element has sufficient color contrast of 7.34"
+            }
+          ],
+          "all": [],
+          "none": [],
+          "impact": null,
+          "html": "<a href=\"https://github.com/jgudo/ecommerce-react\">HERE</a>",
+          "target": [
+            ".footer-col-3 > strong > span > a"
           ]
         }
       ]
@@ -3531,20 +3781,6 @@
       "nodes": [
         {
           "any": [
-            {
-              "id": "link-in-text-block",
-              "data": null,
-              "relatedNodes": [
-                {
-                  "html": "<div class=\"footer-col-3\"><strong><span>Fork this project &nbsp;<a href=\"https://github.com/jgudo/ecommerce-react\">HERE</a></span></strong></div>",
-                  "target": [
-                    ".footer-col-3"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Links can be distinguished from surrounding text in some way other than by color"
-            },
             {
               "id": "link-in-text-block-style",
               "data": null,
@@ -4367,367 +4603,5 @@
     }
   ],
   "incomplete": [],
-  "violations": [
-    {
-      "id": "color-contrast",
-      "impact": "serious",
-      "tags": [
-        "cat.color",
-        "wcag2aa",
-        "wcag143",
-        "TTv5",
-        "TT13.c",
-        "EN-301-549",
-        "EN-9.1.4.3",
-        "ACT",
-        "RGAAv4",
-        "RGAA-3.2.1"
-      ],
-      "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-      "help": "Elements must meet minimum color contrast ratio thresholds",
-      "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/color-contrast?application=playwright",
-      "nodes": [
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#059669",
-                "bgColor": "#ffffff",
-                "contrastRatio": 3.76,
-                "fontSize": "10.5pt (14px)",
-                "fontWeight": "bold",
-                "messageKey": null,
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<nav class=\"navigation\">",
-                  "target": [
-                    "nav"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element has insufficient color contrast of 3.76 (foreground color: #059669, background color: #ffffff, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<a aria-current=\"page\" class=\"navigation-menu-active\" href=\"/\">Home</a>",
-          "target": [
-            ".navigation-menu-active"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.76 (foreground color: #059669, background color: #ffffff, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#82cbb4",
-                "bgColor": "#ffffff",
-                "contrastRatio": 1.88,
-                "fontSize": "10.5pt (14px)",
-                "fontWeight": "bold",
-                "messageKey": null,
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<nav class=\"navigation\">",
-                  "target": [
-                    "nav"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element has insufficient color contrast of 1.88 (foreground color: #82cbb4, background color: #ffffff, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<a href=\"/shop\">Shop</a>",
-          "target": [
-            "li:nth-child(2) > a[href$=\"shop\"]"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.88 (foreground color: #82cbb4, background color: #ffffff, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#82cbb4",
-                "bgColor": "#ffffff",
-                "contrastRatio": 1.88,
-                "fontSize": "10.5pt (14px)",
-                "fontWeight": "bold",
-                "messageKey": null,
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<nav class=\"navigation\">",
-                  "target": [
-                    "nav"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element has insufficient color contrast of 1.88 (foreground color: #82cbb4, background color: #ffffff, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<a href=\"/featured\">Featured</a>",
-          "target": [
-            "li:nth-child(3) > a[href$=\"featured\"]"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.88 (foreground color: #82cbb4, background color: #ffffff, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#82cbb4",
-                "bgColor": "#ffffff",
-                "contrastRatio": 1.88,
-                "fontSize": "10.5pt (14px)",
-                "fontWeight": "bold",
-                "messageKey": null,
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<nav class=\"navigation\">",
-                  "target": [
-                    "nav"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element has insufficient color contrast of 1.88 (foreground color: #82cbb4, background color: #ffffff, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<a href=\"/recommended\">Recommended</a>",
-          "target": [
-            "li:nth-child(4) > a[href$=\"recommended\"]"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.88 (foreground color: #82cbb4, background color: #ffffff, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#ffffff",
-                "bgColor": "#059669",
-                "contrastRatio": 3.76,
-                "fontSize": "9.0pt (12px)",
-                "fontWeight": "bold",
-                "messageKey": null,
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<a class=\"button button-small\" href=\"/signup\">Sign Up</a>",
-                  "target": [
-                    "a[href$=\"signup\"]"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element has insufficient color contrast of 3.76 (foreground color: #ffffff, background color: #059669, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<a class=\"button button-small\" href=\"/signup\">Sign Up</a>",
-          "target": [
-            "a[href$=\"signup\"]"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.76 (foreground color: #ffffff, background color: #059669, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#ffffff",
-                "bgColor": "#069669",
-                "contrastRatio": 3.76,
-                "fontSize": "12.0pt (16px)",
-                "fontWeight": "bold",
-                "messageKey": null,
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<a class=\"button\" href=\"/shop\">",
-                  "target": [
-                    ".button[href$=\"shop\"]"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element has insufficient color contrast of 3.76 (foreground color: #ffffff, background color: #069669, font size: 12.0pt (16px), font weight: bold). Expected contrast ratio of 4.5:1"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<a class=\"button\" href=\"/shop\">",
-          "target": [
-            ".button[href$=\"shop\"]"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.76 (foreground color: #ffffff, background color: #069669, font size: 12.0pt (16px), font weight: bold). Expected contrast ratio of 4.5:1"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#069669",
-                "bgColor": "#ffffff",
-                "contrastRatio": 3.76,
-                "fontSize": "13.5pt (18px)",
-                "fontWeight": "bold",
-                "messageKey": null,
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<body>",
-                  "target": [
-                    "body"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element has insufficient color contrast of 3.76 (foreground color: #069669, background color: #ffffff, font size: 13.5pt (18px), font weight: bold). Expected contrast ratio of 4.5:1"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<a href=\"/featured\">See All</a>",
-          "target": [
-            ".display-header > a[href$=\"featured\"]"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.76 (foreground color: #069669, background color: #ffffff, font size: 13.5pt (18px), font weight: bold). Expected contrast ratio of 4.5:1"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#069669",
-                "bgColor": "#ffffff",
-                "contrastRatio": 3.76,
-                "fontSize": "13.5pt (18px)",
-                "fontWeight": "bold",
-                "messageKey": null,
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<body>",
-                  "target": [
-                    "body"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element has insufficient color contrast of 3.76 (foreground color: #069669, background color: #ffffff, font size: 13.5pt (18px), font weight: bold). Expected contrast ratio of 4.5:1"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<a href=\"/recommended\">See All</a>",
-          "target": [
-            ".display-header > a[href$=\"recommended\"]"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.76 (foreground color: #069669, background color: #ffffff, font size: 13.5pt (18px), font weight: bold). Expected contrast ratio of 4.5:1"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#059669",
-                "bgColor": "#f0f0f0",
-                "contrastRatio": 3.3,
-                "fontSize": "9.0pt (12px)",
-                "fontWeight": "bold",
-                "messageKey": null,
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<footer class=\"footer\">",
-                  "target": [
-                    "footer"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element has insufficient color contrast of 3.3 (foreground color: #059669, background color: #f0f0f0, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<a href=\"https://github.com/jgudo\">JULIUS GUEVARRA</a>",
-          "target": [
-            "a[href$=\"jgudo\"]"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.3 (foreground color: #059669, background color: #f0f0f0, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
-        },
-        {
-          "any": [
-            {
-              "id": "color-contrast",
-              "data": {
-                "fgColor": "#059669",
-                "bgColor": "#f0f0f0",
-                "contrastRatio": 3.3,
-                "fontSize": "9.0pt (12px)",
-                "fontWeight": "bold",
-                "messageKey": null,
-                "expectedContrastRatio": "4.5:1"
-              },
-              "relatedNodes": [
-                {
-                  "html": "<footer class=\"footer\">",
-                  "target": [
-                    "footer"
-                  ]
-                }
-              ],
-              "impact": "serious",
-              "message": "Element has insufficient color contrast of 3.3 (foreground color: #059669, background color: #f0f0f0, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
-            }
-          ],
-          "all": [],
-          "none": [],
-          "impact": "serious",
-          "html": "<a href=\"https://github.com/jgudo/ecommerce-react\">HERE</a>",
-          "target": [
-            ".footer-col-3 > strong > span > a"
-          ],
-          "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.3 (foreground color: #059669, background color: #f0f0f0, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
-        }
-      ]
-    }
-  ]
+  "violations": []
 }

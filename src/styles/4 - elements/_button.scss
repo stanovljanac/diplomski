@@ -42,12 +42,14 @@
 .button-muted {
   @extend .button;
   background: $background-color-01;
-  color: $text-muted; // umesto lighten(...)
+  color: $text-muted;
   border: 1px solid $border-color;
 
-  &:hover {
-    background: $background-color-01;
+  &:hover,
+  &:focus {
+    background: $background-color;
     border: 1px solid $border-color-focus;
+    color: $heading-color; // opcionalno: još jasnije u hover/focus
   }
 }
 

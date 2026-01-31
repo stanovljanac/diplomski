@@ -72,10 +72,16 @@
     a {
       padding: 10px 15px;
       font-size: 1.4rem;
-      opacity: 0.5;
 
-      &:hover {
+      // ✅ umesto opacity: 0.5
+      opacity: 1;
+      color: $text-muted;
+
+      &:hover,
+      &:focus {
+        color: $primary;
         background: $background-color-01;
+        text-decoration: underline;
       }
     }
   }
@@ -103,9 +109,10 @@
   font-weight: bold;
   position: relative;
 
-  &:hover {
+  &:hover,
+  &:focus {
     color: $primary;
-    text-decoration: none;
+    text-decoration: underline;
     background: $background-color-01;
   }
 }
@@ -113,4 +120,8 @@
 .navigation-menu-active {
   font-weight: bold;
   opacity: 1 !important;
+
+  // ✅ obavezno
+  color: $primary;
+  text-decoration: underline;
 }

@@ -1,62 +1,58 @@
 //
-// COLORS ---------
+// COLORS --------- (Emerald Premium)
 //
 
+// (Opcionalno) CSS varijable, ako ih koristiš negde direktno u CSS-u:
 :root {
-  --nav-bg: #f8f8f8;
-  --nav-bg-scrolled: #fff;
-  --nav-bg-shadow: 0 5px 10px rgba(0, 0, 0, 0.02);
+  --nav-bg: #f8fafc;
+  --nav-bg-scrolled: #ffffff;
+  --nav-bg-shadow: 0 5px 10px rgba(0, 0, 0, 0.06);
 }
 
-$nav-bg: #f8f8f8;
-$nav-bg-scrolled: #fff;
+// Navigation background tokens (ako se koriste u SCSS)
+$nav-bg: #f8fafc;
+$nav-bg-scrolled: #ffffff;
 
-$background-color: #f9f9f9;
-$background-color-01: #f2f2f2;
+// Backgrounds
+$background-color: #ffffff; // main
+$background-color-01: #f8fafc; // panels/cards
 
-// Paragraphs
-$paragraph-color: #4a4a4a; // base
+// Text
+$heading-color: #0f172a; // slate-900
+$paragraph-color: #334155; // slate-700 (primary body text)
+$text-muted: #64748b; // slate-500 (muted text, still AA-friendly)
 
-// Heading
-$heading-color: #1a1a1a;
+// Borders / focus
+$border-color: #e2e8f0; // slate-200
+$primary: #065f46; // emerald-800
+$primary-hover: #064e3b; // emerald-900
+$border-color-focus: $primary;
 
-// Border
-$border-color: #e1e1e1;
-$border-color-focus: #c5c5c5;
-
-// General
+// General (keep if project uses these)
 $white: #fff;
 $black: #000;
-$off-black: #303030;
-$off-white: #f0f0f0;
-$red: rgba(247, 45, 45, 0.986);
-$green: rgb(59, 150, 32);
-$yellow: rgb(228, 165, 31);
-$gray-01: #3a3a3a;
-$gray-10: #818181;
-$gray-20: #b6b6b6;
+$off-black: #0f172a;
+$off-white: #f8fafc;
+
+// Status colors (accessibility-friendly defaults)
+$red: #dc2626; // red-600
+$green: $primary; // align success to primary theme
+$yellow: #d97706; // amber-600
+
+// Grays (only keep if referenced elsewhere)
+$gray-01: #334155;
+$gray-10: #64748b;
+$gray-20: #94a3b8;
 
 // Buttons
-$button-color: #101010;
-$button-hover: lighten($button-color, 10%);
+$button-color: $primary;
+$button-hover: $primary-hover;
 
-// Social
-$color-facebook: #0078ff;
+// Social (keep)
+$color-facebook: #1877f2;
 $color-facebook-hover: darken($color-facebook, 5%);
 $color-github: #24292e;
 $color-github-hover: lighten($color-github, 5%);
-$text-muted: #6b7280;
 
-// EMERALD DARK ACCENT TEMA
-$background-color: #ffffff;
-$background-color-01: #f8fafc;
-$heading-color: #0f172a;
-$paragraph-color: #334155;
-$text-muted: #64748b;
-$primary: #059669;
-$primary-hover: #047857;
-$border-color: #e2e8f0;
-$border-color-focus: $primary;
-$button-color: $primary;
-$button-hover: $primary-hover;
-$color-success: #000;
+// Misc
+$color-success: $green;

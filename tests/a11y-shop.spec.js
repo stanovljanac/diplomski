@@ -9,54 +9,44 @@ const {
   appendToMinorBacklogMarkdown,
 } = require("./helpers/a11y");
 
-test("HOME a11y (Phase 2: fail on critical+serious+moderate)", async ({
+test("SIGNUP a11y (Phase 2: fail on critical+serious+moderate)", async ({
   page,
 }, testInfo) => {
-  // 1) Otvori HOME stranicu
-  await page.goto("/");
+  await page.goto("/signup", { waitUntil: "domcontentloaded" });
 
-  // 2) Pokreni axe scan (Phase 2 = uključujemo sve, i contrast)
   const results = await runA11yScan(page, {
     tags: ["wcag2a", "wcag2aa"],
-    disableRules: [], // ništa ne ignorišemo
+    disableRules: [], // Phase 2: ništa ne gasimo
   });
 
-  // 3) Podeli rezultate:
-  // blocking = fail
-  // backlog = minor (samo zapis)
   const { blocking, backlog } = splitByImpact(results.violations, {
     blockingImpacts: ["critical", "serious", "moderate"],
     backlogImpacts: ["minor"],
   });
 
-  // 4) Sačuvaj artefakte (summary + pretty json)
   const { summaryPath, prettyPath } = writeA11yArtifacts({
     testName: testInfo.title,
     results,
     writeRaw: false,
   });
 
-  // 5) BLOCKING problemi → fail + konzola
+  // --- BLOCKERS (fail) ---
   if (blocking.length) {
-    console.log(`❌ BLOCKERS found on HOME!`);
-    console.log(`Detailed report: ${prettyPath}`);
-
+    console.log(`❌ SIGNUP blockers found. See: ${prettyPath}`);
     console.table(summarizeViolations(blocking));
   } else {
-    console.log("✅ No blockers on HOME page.");
+    console.log("✅ No blockers on SIGNUP.");
   }
 
-  // 6) MINOR problemi → backlog export (ne ruši pipeline)
+  // --- MINOR BACKLOG (log only) ---
   if (backlog.length) {
-    console.log(`ℹ️ Minor issues found (saved to backlog).`);
+    console.log("ℹ️ SIGNUP minor issues found → writing backlog.");
 
-    // JSON backlog
     const { backlogPath } = appendToMinorBacklog({
       testName: testInfo.title,
       minorViolations: backlog,
     });
 
-    // Markdown backlog (lep za diplomski)
     const { mdPath } = appendToMinorBacklogMarkdown({
       testName: testInfo.title,
       minorViolations: backlog,
@@ -66,8 +56,9 @@ test("HOME a11y (Phase 2: fail on critical+serious+moderate)", async ({
     console.log("Minor backlog Markdown:", mdPath);
 
     console.table(summarizeViolations(backlog));
+  } else {
+    console.log(`ℹ️ No minor issues on SIGNUP. Summary: ${summaryPath}`);
   }
 
-  // 7) Pipeline fail uslov: blocking mora biti prazan
   expect(blocking).toEqual([]);
 });

@@ -1,7 +1,7 @@
 {
   "testName": "SIGNUP a11y (Phase 2: fail on critical+serious+moderate)",
   "url": "http://localhost:3000/signup",
-  "timestamp": "2026-01-31T18:38:31.425Z",
+  "timestamp": "2026-01-31T19:36:20.280Z",
   "counts": {
     "total": 0,
     "blocking": 0,

@@ -5,11 +5,6 @@ const path = require("path");
 const DEFAULT_BLOCKING_IMPACTS = ["critical", "serious", "moderate"];
 const DEFAULT_BACKLOG_IMPACTS = ["minor"];
 
-/**
- * Za Phase 2:
- * - blocking: critical+serious+moderate (fail)
- * - backlog: minor (ne fail, samo log)
- */
 function splitByImpact(
   violations,
   {
@@ -67,13 +62,6 @@ async function runA11yScan(
   return await builder.analyze();
 }
 
-/**
- * Piše samo male fajlove po defaultu:
- * - *.summary.json (kratak)
- * - *.pretty.json (za diplomski + debug)
- *
- * Za puni axe output, uključi writeRaw: true.
- */
 function writeA11yArtifacts({ testName, results, writeRaw = false }) {
   const outDir = path.join(process.cwd(), "test-results", "a11y");
   fs.mkdirSync(outDir, { recursive: true });
@@ -113,10 +101,63 @@ function writeA11yArtifacts({ testName, results, writeRaw = false }) {
   return { summaryPath, prettyPath, rawPath: writeRaw ? rawPath : null };
 }
 
+// ✅ OVO JE NOVO: backlog export
+function appendToMinorBacklog({ testName, minorViolations }) {
+  const outDir = path.join(process.cwd(), "test-results", "a11y");
+  fs.mkdirSync(outDir, { recursive: true });
+
+  const backlogPath = path.join(outDir, "minor-backlog.json");
+
+  let backlog = [];
+  if (fs.existsSync(backlogPath)) {
+    try {
+      backlog = JSON.parse(fs.readFileSync(backlogPath, "utf-8"));
+      if (!Array.isArray(backlog)) backlog = [];
+    } catch {
+      backlog = [];
+    }
+  }
+
+  backlog.push({
+    timestamp: new Date().toISOString(),
+    testName,
+    count: minorViolations.length,
+    items: prettyViolations(minorViolations),
+  });
+
+  fs.writeFileSync(backlogPath, JSON.stringify(backlog, null, 2), "utf-8");
+  return { backlogPath };
+}
+
+function appendToMinorBacklogMarkdown({ testName, minorViolations }) {
+  const outDir = path.join(process.cwd(), "test-results", "a11y");
+  fs.mkdirSync(outDir, { recursive: true });
+
+  const mdPath = path.join(outDir, "minor-backlog.md");
+
+  const lines = [];
+  lines.push(`## ${new Date().toISOString()} — ${testName}`);
+  lines.push(`Minor issues: ${minorViolations.length}`);
+  lines.push("");
+
+  minorViolations.forEach((v) => {
+    lines.push(`- **${v.id}** (${v.impact}) — ${v.help}`);
+    lines.push(`  - ${v.helpUrl}`);
+    lines.push(`  - nodes: ${v.nodes.length}`);
+  });
+
+  lines.push("");
+  fs.appendFileSync(mdPath, lines.join("\n") + "\n", "utf-8");
+
+  return { mdPath };
+}
+
 module.exports = {
   runA11yScan,
   splitByImpact,
   summarizeViolations,
   prettyViolations,
   writeA11yArtifacts,
+  appendToMinorBacklog,
+  appendToMinorBacklogMarkdown,
 };

@@ -9,30 +9,38 @@ const {
 test("ADMIN ADD a11y (Phase 2: login then fail on critical+serious+moderate)", async ({
   page,
 }, testInfo) => {
-  // 1) Login
   await page.goto("/signin", { waitUntil: "domcontentloaded" });
 
-  await page.getByLabel("Email").fill(process.env.PW_ADMIN_EMAIL || "");
-  await page.getByLabel("Password").fill(process.env.PW_ADMIN_PASSWORD || "");
+  // 1) fill creds (mora da postoje)
+  const email = process.env.PW_ADMIN_EMAIL;
+  const pass = process.env.PW_ADMIN_PASSWORD;
+
+  if (!email || !pass) {
+    throw new Error(
+      "Missing PW_ADMIN_EMAIL / PW_ADMIN_PASSWORD. Load .env (dotenv) or set env vars.",
+    );
+  }
+
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Password").fill(pass);
   await page.getByRole("button", { name: /sign in/i }).click();
 
-  // 2) Čekaj da login stvarno prođe (bar da URL nije više /signin)
-  // Ako tvoja app prebacuje na / ili /admin, ovo je dovoljno stabilno:
-  await page.waitForURL((url) => !url.pathname.includes("/signin"), {
-    timeout: 15000,
-  });
-
-  // 3) Admin add strana
+  // 2) Umesto waitForURL (koji ti ne radi), idi kao pre na admin/add:
   await page.goto("/admin/add", { waitUntil: "domcontentloaded" });
 
-  // (opciono) ako tu ima nekih async stvari, ovo pomaže da axe vidi final DOM
-  await page.waitForTimeout(300);
+  // 3) Hard check: ako i dalje vidiš Sign In formu, login nije uspeo
+  // (prilagodi selector ako treba)
+  const stillOnSignin = await page
+    .getByRole("button", { name: /sign in/i })
+    .isVisible()
+    .catch(() => false);
+  if (stillOnSignin) {
+    throw new Error(
+      "Login failed: still seeing Sign In button after navigation to /admin/add. Check credentials/admin role.",
+    );
+  }
 
-  // 4) Axe scan
-  const results = await runA11yScan(page, {
-    tags: ["wcag2a", "wcag2aa"],
-    disableRules: [], // Phase 2: ništa ne gasimo
-  });
+  const results = await runA11yScan(page);
 
   const { blocking, backlog } = splitByImpact(results.violations, {
     blockingImpacts: ["critical", "serious", "moderate"],

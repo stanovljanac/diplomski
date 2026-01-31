@@ -1,11 +1,11 @@
-// 
+//
 // COLORS ---------
-// 
+//
 
 :root {
   --nav-bg: #f8f8f8;
-  --nav-bg-scrolled: #fff; 
-  --nav-bg-shadow: 0 5px 10px rgba(0, 0, 0, .02);
+  --nav-bg-scrolled: #fff;
+  --nav-bg-shadow: 0 5px 10px rgba(0, 0, 0, 0.02);
 }
 
 $nav-bg: #f8f8f8;
@@ -20,7 +20,7 @@ $paragraph-color: #4a4a4a; // base
 // Heading
 $heading-color: #1a1a1a;
 
-// Border 
+// Border
 $border-color: #e1e1e1;
 $border-color-focus: #c5c5c5;
 
@@ -45,5 +45,18 @@ $color-facebook: #0078ff;
 $color-facebook-hover: darken($color-facebook, 5%);
 $color-github: #24292e;
 $color-github-hover: lighten($color-github, 5%);
+$text-muted: #6b7280;
 
+// EMERALD DARK ACCENT TEMA
+$background-color: #ffffff;
+$background-color-01: #f8fafc;
+$heading-color: #0f172a;
+$paragraph-color: #334155;
+$text-muted: #64748b;
+$primary: #059669;
+$primary-hover: #047857;
+$border-color: #e2e8f0;
+$border-color-focus: $primary;
+$button-color: $primary;
+$button-hover: $primary-hover;
 $color-success: #000;

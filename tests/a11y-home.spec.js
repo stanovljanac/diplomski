@@ -1,21 +1,48 @@
 const { test, expect } = require("@playwright/test");
-const { AxeBuilder } = require("@axe-core/playwright");
+const {
+  runA11yScan,
+  filterByImpact,
+  summarizeViolations,
+  writeA11yArtifacts,
+  prettyViolations,
+} = require("./helpers/a11y");
 
-test("HOME a11y smoke (run scan and print)", async ({ page }) => {
-  await page.goto("/", { waitUntil: "domcontentloaded" });
+test("HOME a11y (Phase 2: fail on critical+serious+moderate)", async ({
+  page,
+}, testInfo) => {
+  await page.goto("/");
 
-  const results = await new AxeBuilder({ page })
-    .withTags(["wcag2a", "wcag2aa"])
-    .disableRules(["color-contrast"]) // po želji, za phase 1
-    .analyze();
+  const results = await runA11yScan(page);
 
-  console.table(
-    results.violations.map((v) => ({
-      id: v.id,
-      impact: v.impact,
-      nodes: v.nodes.length,
-    })),
-  );
+  const blockers = filterByImpact(results.violations, [
+    "critical",
+    "serious",
+    "moderate",
+  ]);
+  const minor = filterByImpact(results.violations, ["minor"]);
 
-  expect(results.violations).toBeDefined();
+  // 1) Upisi fajlove na disk
+  const { prettyPath } = writeA11yArtifacts({
+    testName: testInfo.title,
+    results,
+  });
+
+  // 2) Prikaži u konzoli kratak rezime (da ne bude 200+ linija)
+  console.log("BLOCKERS summary:");
+  console.table(summarizeViolations(blockers));
+
+  // 3) Minor u backlog: samo rezime
+  if (minor.length) {
+    console.log("MINOR (backlog) summary:");
+    console.table(summarizeViolations(minor));
+  }
+
+  // 4) Ako padne, ispiši gde tačno puca (targets + failureSummary)
+  if (blockers.length) {
+    console.log(`Detailed blockers written to: ${prettyPath}`);
+    // ovo zna da bude duže, ali je super za debug kad ti treba:
+    // console.log(JSON.stringify(prettyViolations(blockers), null, 2));
+  }
+
+  expect(blockers).toEqual([]);
 });

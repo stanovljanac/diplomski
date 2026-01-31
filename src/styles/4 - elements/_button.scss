@@ -8,7 +8,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  @include bezier-transition(all, .3s, ease);
+  @include bezier-transition(all, 0.3s, ease);
 
   &:hover {
     cursor: pointer;
@@ -19,10 +19,10 @@
 }
 
 .button:disabled {
-  opacity: .5;
+  opacity: 0.5;
 
   &:hover {
-    cursor: not-allowed;   
+    cursor: not-allowed;
     // background: none;
   }
 }
@@ -42,11 +42,11 @@
 .button-muted {
   @extend .button;
   background: $background-color-01;
-  color: lighten($paragraph-color, 20%);
+  color: $text-muted; // umesto lighten(...)
   border: 1px solid $border-color;
 
   &:hover {
-    background: $background-color;
+    background: $background-color-01;
     border: 1px solid $border-color-focus;
   }
 }

@@ -1,41 +1,43 @@
 const { test, expect } = require("@playwright/test");
-const { AxeBuilder } = require("@axe-core/playwright");
-const fs = require("fs");
-const path = require("path");
+const {
+  runA11yScan,
+  splitByImpact,
+  summarizeViolations,
+  writeA11yArtifacts,
+} = require("./helpers/a11y");
 
-function saveReport(name, results) {
-  const outPath = path.join(process.cwd(), "a11y-reports", `${name}.json`);
-  fs.writeFileSync(outPath, JSON.stringify(results, null, 2), "utf-8");
-  console.log("Saved a11y report:", outPath);
-}
-
-test("HOME a11y (phase 1: structure rules, ignore color-contrast)", async ({
+test("SIGNUP a11y (Phase 2: fail on critical+serious+moderate)", async ({
   page,
-}) => {
+}, testInfo) => {
   await page.goto("/signup", { waitUntil: "domcontentloaded" });
 
-  const results = await new AxeBuilder({ page })
-    .withTags(["wcag2a", "wcag2aa"])
-    .disableRules(["color-contrast"]) // phase 1
-    .analyze();
+  const results = await runA11yScan(page, {
+    tags: ["wcag2a", "wcag2aa"],
+    disableRules: [], // Phase 2: ništa ne gasimo (ni color-contrast)
+  });
 
-  saveReport("home-phase1", results);
+  const { blocking, backlog } = splitByImpact(results.violations, {
+    blockingImpacts: ["critical", "serious", "moderate"],
+    backlogImpacts: ["minor"],
+  });
 
-  const seriousOrCritical = results.violations.filter(
-    (v) => v.impact === "critical" || v.impact === "serious",
-  );
+  const { summaryPath, prettyPath } = writeA11yArtifacts({
+    testName: testInfo.title,
+    results,
+    writeRaw: false,
+  });
 
-  // sažetak u konzoli (čitljivo)
-  if (seriousOrCritical.length) {
-    console.table(
-      seriousOrCritical.map((v) => ({
-        id: v.id,
-        impact: v.impact,
-        help: v.help,
-        nodes: v.nodes.length,
-      })),
-    );
+  if (blocking.length) {
+    console.log(`❌ SIGNUP blockers found. See: ${prettyPath}`);
+    console.table(summarizeViolations(blocking));
+  } else {
+    console.log("✅ No blockers on SIGNUP.");
   }
 
-  expect(seriousOrCritical).toEqual([]);
+  if (backlog.length) {
+    console.log(`ℹ️ SIGNUP minor (backlog). See: ${summaryPath}`);
+    console.table(summarizeViolations(backlog));
+  }
+
+  expect(blocking).toEqual([]);
 });

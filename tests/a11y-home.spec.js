@@ -1,10 +1,9 @@
 const { test, expect } = require("@playwright/test");
 const {
   runA11yScan,
-  filterByImpact,
+  splitByImpact,
   summarizeViolations,
   writeA11yArtifacts,
-  prettyViolations,
 } = require("./helpers/a11y");
 
 test("HOME a11y (Phase 2: fail on critical+serious+moderate)", async ({
@@ -12,37 +11,36 @@ test("HOME a11y (Phase 2: fail on critical+serious+moderate)", async ({
 }, testInfo) => {
   await page.goto("/");
 
-  const results = await runA11yScan(page);
-
-  const blockers = filterByImpact(results.violations, [
-    "critical",
-    "serious",
-    "moderate",
-  ]);
-  const minor = filterByImpact(results.violations, ["minor"]);
-
-  // 1) Upisi fajlove na disk
-  const { prettyPath } = writeA11yArtifacts({
-    testName: testInfo.title,
-    results,
+  const results = await runA11yScan(page, {
+    tags: ["wcag2a", "wcag2aa"],
+    // Phase 2: NE ignorišemo color-contrast
+    disableRules: [],
   });
 
-  // 2) Prikaži u konzoli kratak rezime (da ne bude 200+ linija)
-  console.log("BLOCKERS summary:");
-  console.table(summarizeViolations(blockers));
+  const { blocking, backlog } = splitByImpact(results.violations, {
+    blockingImpacts: ["critical", "serious", "moderate"],
+    backlogImpacts: ["minor"],
+  });
 
-  // 3) Minor u backlog: samo rezime
-  if (minor.length) {
-    console.log("MINOR (backlog) summary:");
-    console.table(summarizeViolations(minor));
+  // pišemo samo summary + pretty (raw ne)
+  const { summaryPath, prettyPath } = writeA11yArtifacts({
+    testName: testInfo.title,
+    results,
+    writeRaw: false,
+  });
+
+  // kratko u konzoli
+  if (blocking.length) {
+    console.log(`❌ BLOCKERS found. See: ${prettyPath}`);
+    console.table(summarizeViolations(blocking));
+  } else {
+    console.log("✅ No blockers on HOME.");
   }
 
-  // 4) Ako padne, ispiši gde tačno puca (targets + failureSummary)
-  if (blockers.length) {
-    console.log(`Detailed blockers written to: ${prettyPath}`);
-    // ovo zna da bude duže, ali je super za debug kad ti treba:
-    // console.log(JSON.stringify(prettyViolations(blockers), null, 2));
+  if (backlog.length) {
+    console.log(`ℹ️ MINOR (backlog) found. See: ${summaryPath}`);
+    console.table(summarizeViolations(backlog));
   }
 
-  expect(blockers).toEqual([]);
+  expect(blocking).toEqual([]);
 });

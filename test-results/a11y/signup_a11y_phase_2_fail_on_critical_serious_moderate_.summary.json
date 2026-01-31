@@ -1,0 +1,20 @@
+{
+  "testName": "SIGNUP a11y (Phase 2: fail on critical+serious+moderate)",
+  "url": "http://localhost:3000/signup",
+  "timestamp": "2026-01-31T17:54:40.295Z",
+  "counts": {
+    "total": 1,
+    "blocking": 1,
+    "backlog": 0
+  },
+  "blocking": [
+    {
+      "id": "color-contrast",
+      "impact": "serious",
+      "help": "Elements must meet minimum color contrast ratio thresholds",
+      "nodes": 4,
+      "helpUrl": "https://dequeuniversity.com/rules/axe/4.11/color-contrast?application=playwright"
+    }
+  ],
+  "backlog": []
+}

@@ -1,0 +1,88 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - navigation [ref=e3]:
+    - link "Logo" [ref=e5] [cursor=pointer]:
+      - /url: /
+      - img "Logo" [ref=e6]
+    - list [ref=e7]:
+      - listitem [ref=e8]:
+        - link "Home" [ref=e9] [cursor=pointer]:
+          - /url: /
+      - listitem [ref=e10]:
+        - link "Shop" [ref=e11] [cursor=pointer]:
+          - /url: /shop
+      - listitem [ref=e12]:
+        - link "Featured" [ref=e13] [cursor=pointer]:
+          - /url: /featured
+      - listitem [ref=e14]:
+        - link "Recommended" [ref=e15] [cursor=pointer]:
+          - /url: /recommended
+    - generic [ref=e16]:
+      - img "search" [ref=e17]:
+        - img [ref=e18]
+      - textbox "Search product..." [ref=e20]
+    - list [ref=e21]:
+      - listitem [ref=e22]:
+        - button "shopping" [disabled] [ref=e23]:
+          - img "shopping" [ref=e25]:
+            - img [ref=e26]
+      - listitem [ref=e28]:
+        - link "Sign In" [ref=e29] [cursor=pointer]:
+          - /url: /signin
+  - generic [ref=e30]:
+    - generic [ref=e31]:
+      - generic [ref=e32]:
+        - heading "My Basket ( 0 item)" [level=3] [ref=e33]:
+          - text: My Basket
+          - generic [ref=e34]: ( 0 item)
+        - text: Close
+        - button "Clear Basket" [disabled] [ref=e35]:
+          - generic [ref=e36]: Clear Basket
+      - heading "Your basket is empty" [level=5] [ref=e38]
+    - generic [ref=e39]:
+      - generic [ref=e40]:
+        - paragraph [ref=e41]: "Subtotal Amout:"
+        - heading "$0.00" [level=2] [ref=e42]
+      - button "Check Out" [disabled] [ref=e43]
+  - main [ref=e44]:
+    - generic [ref=e45]:
+      - generic [ref=e46]:
+        - generic [ref=e47]:
+          - heading "Sign up to Salinaka" [level=3] [ref=e48]
+          - generic [ref=e49]:
+            - generic [ref=e51]:
+              - generic [ref=e52]: "* Full Name"
+              - textbox "* Full Name" [ref=e53]:
+                - /placeholder: John Doe
+            - generic [ref=e55]:
+              - generic [ref=e56]: "* Email"
+              - textbox "* Email" [ref=e57]:
+                - /placeholder: test@example.com
+            - generic [ref=e59]:
+              - generic [ref=e60]: "* Password"
+              - textbox "* Password" [ref=e61]:
+                - /placeholder: Your Password
+            - button "Sign Up arrow-right" [ref=e63]:
+              - text: Sign Up
+              - img "arrow-right" [ref=e64]:
+                - img [ref=e65]
+        - heading "OR" [level=6] [ref=e68]
+        - generic [ref=e69]:
+          - button "facebook Continue with Facebook" [ref=e70]:
+            - img "facebook" [ref=e71]:
+              - img [ref=e72]
+            - text: Continue with Facebook
+          - button "google Continue with Google" [ref=e74]:
+            - img "google" [ref=e75]:
+              - img [ref=e76]
+            - text: Continue with Google
+          - button "github Continue with GitHub" [ref=e78]:
+            - img "github" [ref=e79]:
+              - img [ref=e80]
+            - text: Continue with GitHub
+      - generic [ref=e82]:
+        - strong [ref=e84]: Already have an account?
+        - button "Sign In" [ref=e85]
+```

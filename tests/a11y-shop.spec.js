@@ -9,9 +9,7 @@ const {
   appendToMinorBacklogMarkdown,
 } = require("./helpers/a11y");
 
-test("SIGNUP a11y (Phase 2: fail on critical+serious+moderate)", async ({
-  page,
-}, testInfo) => {
+test("SIGNUP a11y (Phase 3 fail)", async ({ page }, testInfo) => {
   await page.goto("/signup", { waitUntil: "domcontentloaded" });
   await page.screenshot({
     path: `test-results/a11y/${testInfo.title}.png`,

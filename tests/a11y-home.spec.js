@@ -9,9 +9,7 @@ const {
   appendToMinorBacklogMarkdown,
 } = require("./helpers/a11y");
 
-test("HOME a11y (Phase 2: fail on critical+serious+moderate)", async ({
-  page,
-}, testInfo) => {
+test("HOME a11y (Phase 3 fail)", async ({ page }, testInfo) => {
   // 1) Otvori HOME stranicu
   await page.goto("/");
   await page.screenshot({

@@ -19,6 +19,7 @@ jobs:
       VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
       VITE_FIREBASE_MSG_SENDER_ID: ${{ secrets.VITE_FIREBASE_MSG_SENDER_ID }}
       VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+      BASE_URL: http://127.0.0.1:3000
 
       # Playwright creds
       PW_ADMIN_EMAIL: ${{ secrets.PW_ADMIN_EMAIL }}
@@ -42,10 +43,12 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
-      - name: Start app
+      - name: Start app (background) and wait
         run: |
-          yarn dev --host 127.0.0.1 --port 3000 &
-          npx wait-on http://127.0.0.1:3000
+          yarn dev --host 127.0.0.1 --port 3000 > server.log 2>&1 &
+          npx wait-on --timeout 60000 http://127.0.0.1:3000
+          echo "Server is ready"
+          tail -n 30 server.log
 
       - name: Run Playwright a11y tests
         run: npx playwright test
@@ -58,3 +61,4 @@ jobs:
           path: |
             playwright-report
             test-results
+            server.log

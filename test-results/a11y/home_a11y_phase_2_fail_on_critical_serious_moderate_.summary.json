@@ -1,0 +1,12 @@
+{
+  "testName": "HOME a11y (Phase 2: fail on critical+serious+moderate)",
+  "url": "http://localhost:3000/",
+  "timestamp": "2026-01-31T19:36:16.024Z",
+  "counts": {
+    "total": 0,
+    "blocking": 0,
+    "backlog": 0
+  },
+  "blocking": [],
+  "backlog": []
+}

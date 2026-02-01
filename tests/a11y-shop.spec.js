@@ -13,6 +13,10 @@ test("SIGNUP a11y (Phase 2: fail on critical+serious+moderate)", async ({
   page,
 }, testInfo) => {
   await page.goto("/signup", { waitUntil: "domcontentloaded" });
+  await page.screenshot({
+    path: `test-results/a11y/${testInfo.title}.png`,
+    fullPage: true,
+  });
 
   const results = await runA11yScan(page, {
     tags: ["wcag2a", "wcag2aa"],

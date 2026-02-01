@@ -14,6 +14,10 @@ test("HOME a11y (Phase 2: fail on critical+serious+moderate)", async ({
 }, testInfo) => {
   // 1) Otvori HOME stranicu
   await page.goto("/");
+  await page.screenshot({
+    path: `test-results/a11y/${testInfo.title}.png`,
+    fullPage: true,
+  });
 
   // 2) Pokreni axe scan (Phase 2 = uključujemo sve, i contrast)
   const results = await runA11yScan(page, {

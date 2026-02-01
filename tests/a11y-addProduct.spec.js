@@ -13,6 +13,10 @@ test("ADMIN ADD a11y (Phase 2: login then fail on critical+serious+moderate)", a
   page,
 }, testInfo) => {
   await page.goto("/signin", { waitUntil: "domcontentloaded" });
+  await page.screenshot({
+    path: `test-results/a11y/${testInfo.title}.png`,
+    fullPage: true,
+  });
 
   // --- LOGIN CREDS ---
   const email = process.env.PW_ADMIN_EMAIL;
@@ -30,6 +34,10 @@ test("ADMIN ADD a11y (Phase 2: login then fail on critical+serious+moderate)", a
 
   // Direktno idi na admin/add (stabilnije nego waitForURL)
   await page.goto("/admin/add", { waitUntil: "domcontentloaded" });
+  await page.screenshot({
+    path: `test-results/a11y/${testInfo.title}.png`,
+    fullPage: true,
+  });
 
   // Hard check: ako vidiš Sign In dugme → login nije uspeo
   const stillOnSignin = await page

@@ -58,8 +58,14 @@ jobs:
             exit 1
           )
 
+      - name: Debug env (non-secret)
+        run: |
+          echo "CI=$CI"
+          echo "BASE_URL=$BASE_URL"
+          echo "NODE_ENV=$NODE_ENV"
+
       - name: Run Playwright a11y tests
-        run: npx playwright test
+        run: npx playwright test --workers=1
 
       - name: Upload report
         if: always()

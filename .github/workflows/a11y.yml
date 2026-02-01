@@ -1,0 +1,78 @@
+name: a11y-gate
+
+on:
+  pull_request:
+    branches: ["master"]
+  push:
+    branches: ["master"]
+
+jobs:
+  a11y:
+    runs-on: ubuntu-latest
+
+    env:
+      # Vite env (Firebase config)
+      VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+      VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+      VITE_FIREBASE_DB_URL: ${{ secrets.VITE_FIREBASE_DB_URL }}
+      VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+      VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+      VITE_FIREBASE_MSG_SENDER_ID: ${{ secrets.VITE_FIREBASE_MSG_SENDER_ID }}
+      VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+
+      # Playwright creds
+      PW_ADMIN_EMAIL: ${{ secrets.PW_ADMIN_EMAIL }}
+      PW_ADMIN_PASSWORD: ${{ secrets.PW_ADMIN_PASSWORD }}
+
+      CI: true
+      BASE_URL: http://127.0.0.1:3000
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - name: Install deps (yarn)
+        run: yarn install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Start app (background) and wait
+        run: |
+          yarn dev --host 0.0.0.0 --port 3000 --strictPort > server.log 2>&1 &
+          npx wait-on --timeout 60000 tcp:3000 || (
+            echo "---- ps ----" &&
+            ps aux | grep -E "vite|yarn dev" | grep -v grep | head -n 50 &&
+            echo "---- ss (port 3000) ----" &&
+            ss -ltnp | grep 3000 || true &&
+            echo "---- lsof 3000 ----" &&
+            (command -v lsof && lsof -i :3000) || echo "lsof not installed" &&
+            echo "---- server.log ----" &&
+            tail -n 300 server.log &&
+            exit 1
+          )
+
+      - name: Debug env (non-secret)
+        run: |
+          echo "CI=$CI"
+          echo "BASE_URL=$BASE_URL"
+          echo "NODE_ENV=$NODE_ENV"
+
+      - name: Run Playwright a11y tests
+        run: npx playwright test --workers=1
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report
+            test-results
+            server.log

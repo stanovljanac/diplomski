@@ -1,7 +1,7 @@
 {
   "testName": "ADMIN ADD a11y (Phase 2: login then fail on critical+serious+moderate)",
   "url": "http://localhost:3000/",
-  "timestamp": "2026-01-31T19:36:16.676Z",
+  "timestamp": "2026-02-01T20:44:32.504Z",
   "counts": {
     "total": 0,
     "blocking": 0,

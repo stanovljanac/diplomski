@@ -9,9 +9,7 @@ const {
   appendToMinorBacklogMarkdown,
 } = require("./helpers/a11y");
 
-test("ADMIN ADD a11y (Phase 2: login then fail on critical+serious+moderate)", async ({
-  page,
-}, testInfo) => {
+test("ADMIN ADD a11y (Phase 3 login fail)", async ({ page }, testInfo) => {
   await page.goto("/signin", { waitUntil: "domcontentloaded" });
 
   // --- LOGIN CREDS ---
@@ -30,6 +28,10 @@ test("ADMIN ADD a11y (Phase 2: login then fail on critical+serious+moderate)", a
 
   // Direktno idi na admin/add (stabilnije nego waitForURL)
   await page.goto("/admin/add", { waitUntil: "domcontentloaded" });
+  await page.screenshot({
+    path: `test-results/a11y/${testInfo.title}.png`,
+    fullPage: true,
+  });
 
   // Hard check: ako vidiš Sign In dugme → login nije uspeo
   const stillOnSignin = await page

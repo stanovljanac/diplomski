@@ -11,10 +11,6 @@ const {
 
 test("ADMIN ADD a11y (Phase 3 login fail)", async ({ page }, testInfo) => {
   await page.goto("/signin", { waitUntil: "domcontentloaded" });
-  await page.screenshot({
-    path: `test-results/a11y/${testInfo.title}.png`,
-    fullPage: true,
-  });
 
   // --- LOGIN CREDS ---
   const email = process.env.PW_ADMIN_EMAIL;

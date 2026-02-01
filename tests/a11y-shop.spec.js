@@ -9,8 +9,8 @@ const {
   appendToMinorBacklogMarkdown,
 } = require("./helpers/a11y");
 
-test("SIGNUP a11y (Phase 3 fail)", async ({ page }, testInfo) => {
-  await page.goto("/signup", { waitUntil: "domcontentloaded" });
+test("SHOP a11y (Phase 3 fail)", async ({ page }, testInfo) => {
+  await page.goto("/shop", { waitUntil: "domcontentloaded" });
   await page.screenshot({
     path: `test-results/a11y/${testInfo.title}.png`,
     fullPage: true,
@@ -34,15 +34,15 @@ test("SIGNUP a11y (Phase 3 fail)", async ({ page }, testInfo) => {
 
   // --- BLOCKERS (fail) ---
   if (blocking.length) {
-    console.log(`❌ SIGNUP blockers found. See: ${prettyPath}`);
+    console.log(`❌ SHOP blockers found. See: ${prettyPath}`);
     console.table(summarizeViolations(blocking));
   } else {
-    console.log("✅ No blockers on SIGNUP.");
+    console.log("✅ No blockers on SHOP.");
   }
 
   // --- MINOR BACKLOG (log only) ---
   if (backlog.length) {
-    console.log("ℹ️ SIGNUP minor issues found → writing backlog.");
+    console.log("ℹ️ SHOP minor issues found → writing backlog.");
 
     const { backlogPath } = appendToMinorBacklog({
       testName: testInfo.title,
@@ -59,7 +59,7 @@ test("SIGNUP a11y (Phase 3 fail)", async ({ page }, testInfo) => {
 
     console.table(summarizeViolations(backlog));
   } else {
-    console.log(`ℹ️ No minor issues on SIGNUP. Summary: ${summaryPath}`);
+    console.log(`ℹ️ No minor issues on SHOP. Summary: ${summaryPath}`);
   }
 
   expect(blocking).toEqual([]);

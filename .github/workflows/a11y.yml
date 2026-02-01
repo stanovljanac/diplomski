@@ -25,6 +25,7 @@ jobs:
       PW_ADMIN_PASSWORD: ${{ secrets.PW_ADMIN_PASSWORD }}
 
       CI: true
+      BASE_URL: http://127.0.0.1:3000
 
     steps:
       - name: Checkout
@@ -45,9 +46,9 @@ jobs:
       - name: Start app (background) and wait
         run: |
           yarn dev --host 0.0.0.0 --port 3000 > server.log 2>&1 &
-          npx wait-on --timeout 120000 http://localhost:3000 || (echo "---- server.log ----" && tail -n 200 server.log && exit 1)
+          npx wait-on --timeout 120000 http://127.0.0.1:3000 || (echo "---- server.log ----" && tail -n 200 server.log && exit 1)
           echo "Server is ready"
-          curl -I http://localhost:3000 | head -n 20
+          curl -I http://127.0.0.1:3000 | head -n 20
 
       - name: Run Playwright a11y tests
         run: npx playwright test

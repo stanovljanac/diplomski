@@ -6,7 +6,7 @@ const { defineConfig } = require("@playwright/test");
 module.exports = defineConfig({
   testDir: "./tests",
   use: {
-    baseURL: process.env.BASE_URL || "http://localhost:3000",
+    baseURL: "http://localhost:3000",
     headless: !!process.env.CI, // CI = true, lokalno = false
   },
   reporter: [["html", { open: "never" }]],

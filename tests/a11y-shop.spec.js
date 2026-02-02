@@ -11,14 +11,18 @@ const {
 
 test("SHOP a11y (Phase 3 fail)", async ({ page }, testInfo) => {
   await page.goto("/shop", { waitUntil: "domcontentloaded" });
+  const cards = page.locator(".product-card");
+  await expect(cards.first()).toBeVisible({ timeout: 15000 });
+  await page.evaluate(() => document.fonts && document.fonts.ready);
+  await page.waitForTimeout(200);
   await page.screenshot({
     path: `test-results/a11y/${testInfo.title}.png`,
     fullPage: true,
   });
 
   const results = await runA11yScan(page, {
-    tags: ["wcag2a", "wcag2aa"],
-    disableRules: [], // Phase 2: ništa ne gasimo
+    tags: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"],
+    disableRules: [],
   });
 
   const { blocking, backlog } = splitByImpact(results.violations, {

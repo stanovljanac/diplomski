@@ -11,6 +11,7 @@ const {
 
 test("ADMIN ADD a11y (Phase 3 login fail)", async ({ page }, testInfo) => {
   await page.goto("/signin", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("nav")).toBeVisible();
 
   // --- LOGIN CREDS ---
   const email = process.env.PW_ADMIN_EMAIL;
@@ -28,6 +29,7 @@ test("ADMIN ADD a11y (Phase 3 login fail)", async ({ page }, testInfo) => {
 
   // Direktno idi na admin/add (stabilnije nego waitForURL)
   await page.goto("/admin/add", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("nav")).toBeVisible();
   await page.screenshot({
     path: `test-results/a11y/${testInfo.title}.png`,
     fullPage: true,
@@ -47,7 +49,7 @@ test("ADMIN ADD a11y (Phase 3 login fail)", async ({ page }, testInfo) => {
 
   // --- RUN AXE SCAN ---
   const results = await runA11yScan(page, {
-    tags: ["wcag2a", "wcag2aa"],
+    tags: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"],
     disableRules: [],
   });
 

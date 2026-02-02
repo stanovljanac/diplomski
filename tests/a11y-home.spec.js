@@ -11,7 +11,8 @@ const {
 
 test("HOME a11y (Phase 3 fail)", async ({ page }, testInfo) => {
   // 1) Otvori HOME stranicu
-  await page.goto("/");
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("nav")).toBeVisible();
   await page.screenshot({
     path: `test-results/a11y/${testInfo.title}.png`,
     fullPage: true,
@@ -19,7 +20,7 @@ test("HOME a11y (Phase 3 fail)", async ({ page }, testInfo) => {
 
   // 2) Pokreni axe scan (Phase 2 = uključujemo sve, i contrast)
   const results = await runA11yScan(page, {
-    tags: ["wcag2a", "wcag2aa"],
+    tags: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"],
     disableRules: [], // ništa ne ignorišemo
   });
 

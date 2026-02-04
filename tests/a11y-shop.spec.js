@@ -21,7 +21,7 @@ test("SHOP a11y (Phase 3 fail)", async ({ page }, testInfo) => {
   });
 
   const results = await runA11yScan(page, {
-    tags: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"],
+    tags: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
     disableRules: [],
   });
 

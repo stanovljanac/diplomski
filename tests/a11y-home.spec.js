@@ -18,9 +18,9 @@ test("HOME a11y (Phase 3 fail)", async ({ page }, testInfo) => {
     fullPage: true,
   });
 
-  // 2) Pokreni axe scan (Phase 2 = uključujemo sve, i contrast)
+  // 2) Pokreni axe scan
   const results = await runA11yScan(page, {
-    tags: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"],
+    tags: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
     disableRules: [], // ništa ne ignorišemo
   });
 

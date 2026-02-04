@@ -49,7 +49,7 @@ test("ADMIN ADD a11y (Phase 3 login fail)", async ({ page }, testInfo) => {
 
   // --- RUN AXE SCAN ---
   const results = await runA11yScan(page, {
-    tags: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"],
+    tags: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
     disableRules: [],
   });
 

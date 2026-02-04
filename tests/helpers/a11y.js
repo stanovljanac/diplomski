@@ -4,6 +4,16 @@ const path = require("path");
 
 const DEFAULT_BLOCKING_IMPACTS = ["critical", "serious", "moderate"];
 const DEFAULT_BACKLOG_IMPACTS = ["minor"];
+const TAGS_GATE = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
+
+const TAGS_AUDIT = [...TAGS_GATE, "best-practice"];
+
+// Ovo je ključ:
+const RULES_PROMOTED_TO_GATE = [
+  "page-has-heading-one",
+  "region",
+  "heading-order",
+];
 
 function splitByImpact(
   violations,

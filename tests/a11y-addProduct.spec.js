@@ -33,8 +33,11 @@ test("ADMIN ADD a11y (Phase 3)", async ({ page }, testInfo) => {
 
   // Stable UI check
   await expect(page.locator("nav")).toBeVisible();
-  await page.evaluate(() => document.fonts?.ready);
-  await page.waitForTimeout(150);
+  await page.evaluate(async () => {
+    if (document.fonts?.ready) await document.fonts.ready;
+  });
+
+  await page.waitForTimeout(1500);
 
   // Screenshot evidence
   await page.screenshot({
@@ -55,7 +58,7 @@ test("ADMIN ADD a11y (Phase 3)", async ({ page }, testInfo) => {
   }
 
   // 3) Run 2-pass scan
-  const { resultsGate, resultsAudit, blocking, backlog } =
+  const { resultsGate, resultsAudit, blocking, backlog, promoted } =
     await runA11yTwoPass(page);
 
   // 4) Save artifacts
@@ -63,13 +66,14 @@ test("ADMIN ADD a11y (Phase 3)", async ({ page }, testInfo) => {
     testName: `${testInfo.title}__gate`,
     results: resultsGate,
     mode: "gate",
+    gateBlockers: blocking,
   });
 
   writeA11yArtifacts({
     testName: `${testInfo.title}__audit`,
     results: resultsAudit,
     mode: "audit",
-    // promotedRuleIds: [] // za kasnije
+    promoted,
   });
 
   // 5) Output

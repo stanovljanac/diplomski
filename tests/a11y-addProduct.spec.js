@@ -1,15 +1,15 @@
 const { test, expect } = require("@playwright/test");
 
 const {
-  runA11yScan,
-  splitByImpact,
-  summarizeViolations,
+  runA11yTwoPass,
   writeA11yArtifacts,
   appendToMinorBacklog,
   appendToMinorBacklogMarkdown,
+  summarizeViolations,
 } = require("./helpers/a11y");
 
-test("ADMIN ADD a11y (Phase 3 login fail)", async ({ page }, testInfo) => {
+test("ADMIN ADD a11y (Phase 3)", async ({ page }, testInfo) => {
+  // 1) Open signin
   await page.goto("/signin", { waitUntil: "domcontentloaded" });
   await expect(page.locator("nav")).toBeVisible();
 
@@ -23,19 +23,26 @@ test("ADMIN ADD a11y (Phase 3 login fail)", async ({ page }, testInfo) => {
     );
   }
 
+  // Fill login form
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(pass);
   await page.getByRole("button", { name: /sign in/i }).click();
 
-  // Direktno idi na admin/add (stabilnije nego waitForURL)
+  // 2) Go directly to admin/add
   await page.goto("/admin/add", { waitUntil: "domcontentloaded" });
+
+  // Stable UI check
   await expect(page.locator("nav")).toBeVisible();
+  await page.evaluate(() => document.fonts?.ready);
+  await page.waitForTimeout(150);
+
+  // Screenshot evidence
   await page.screenshot({
     path: `test-results/a11y/${testInfo.title}.png`,
     fullPage: true,
   });
 
-  // Hard check: ako vidiš Sign In dugme → login nije uspeo
+  // Hard login validation
   const stillOnSignin = await page
     .getByRole("button", { name: /sign in/i })
     .isVisible()
@@ -47,35 +54,35 @@ test("ADMIN ADD a11y (Phase 3 login fail)", async ({ page }, testInfo) => {
     );
   }
 
-  // --- RUN AXE SCAN ---
-  const results = await runA11yScan(page, {
-    tags: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
-    disableRules: [],
+  // 3) Run 2-pass scan
+  const { resultsGate, resultsAudit, blocking, backlog } =
+    await runA11yTwoPass(page);
+
+  // 4) Save artifacts
+  const gateArtifacts = writeA11yArtifacts({
+    testName: `${testInfo.title}__gate`,
+    results: resultsGate,
+    mode: "gate",
   });
 
-  const { blocking, backlog } = splitByImpact(results.violations, {
-    blockingImpacts: ["critical", "serious", "moderate"],
-    backlogImpacts: ["minor"],
+  writeA11yArtifacts({
+    testName: `${testInfo.title}__audit`,
+    results: resultsAudit,
+    mode: "audit",
+    // promotedRuleIds: [] // za kasnije
   });
 
-  const { summaryPath, prettyPath } = writeA11yArtifacts({
-    testName: testInfo.title,
-    results,
-    writeRaw: false,
-  });
-
-  // --- BLOCKERS ---
+  // 5) Output
   if (blocking.length) {
-    console.log(`❌ ADMIN/ADD blockers found. See: ${prettyPath}`);
+    console.log("❌ ADMIN/ADD blockers found.");
+    console.log(`Gate report: ${gateArtifacts.prettyPath}`);
     console.table(summarizeViolations(blocking));
   } else {
-    console.log("✅ No blockers on ADMIN/ADD.");
+    console.log("✅ ADMIN/ADD: no gate blockers.");
   }
 
-  // --- MINOR BACKLOG ---
+  // 6) Backlog export
   if (backlog.length) {
-    console.log("ℹ️ ADMIN/ADD minor issues found → writing backlog.");
-
     const { backlogPath } = appendToMinorBacklog({
       testName: testInfo.title,
       minorViolations: backlog,
@@ -86,13 +93,11 @@ test("ADMIN ADD a11y (Phase 3 login fail)", async ({ page }, testInfo) => {
       minorViolations: backlog,
     });
 
-    console.log("Minor backlog JSON:", backlogPath);
-    console.log("Minor backlog Markdown:", mdPath);
-
+    console.log("ℹ️ ADMIN/ADD: minor backlog saved:", backlogPath);
+    console.log("ℹ️ ADMIN/ADD: minor backlog md:", mdPath);
     console.table(summarizeViolations(backlog));
-  } else {
-    console.log(`ℹ️ No minor issues on ADMIN/ADD. Summary: ${summaryPath}`);
   }
 
+  // 7) Gate condition
   expect(blocking).toEqual([]);
 });

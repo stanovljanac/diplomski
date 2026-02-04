@@ -8,14 +8,14 @@ const path = require("path");
 const TAGS_GATE = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 const TAGS_AUDIT = [...TAGS_GATE, "best-practice"];
 
-// Ako kasnije poželiš da neka best-practice pravila postanu “gate”:
-const RULES_PROMOTED_TO_GATE = []; // npr ["region", "page-has-heading-one"]
+// Best-practice pravila koja želiš da "promovišeš" i da BLOKIRAJU merge:
+const RULES_PROMOTED_TO_GATE = ["region"]; // npr ["region", "page-has-heading-one"]
 
 const DEFAULT_BLOCKING_IMPACTS = ["critical", "serious", "moderate"];
 const DEFAULT_BACKLOG_IMPACTS = ["minor"];
 
 // =======================
-// HELPERS
+// CORE HELPERS
 // =======================
 function splitByImpact(
   violations,
@@ -40,7 +40,7 @@ function summarizeViolations(violations) {
     id: v.id,
     impact: v.impact,
     help: v.help,
-    nodes: v.nodes.length,
+    nodes: v.nodes?.length || 0,
     helpUrl: v.helpUrl,
   }));
 }
@@ -52,7 +52,7 @@ function prettyViolations(violations) {
     help: v.help,
     helpUrl: v.helpUrl,
     tags: v.tags,
-    nodes: v.nodes.map((n) => ({
+    nodes: (v.nodes || []).map((n) => ({
       target: Array.isArray(n.target)
         ? n.target.join(", ")
         : String(n.target || ""),
@@ -62,21 +62,6 @@ function prettyViolations(violations) {
   }));
 }
 
-async function runA11yScan(
-  page,
-  { tags = TAGS_GATE, exclude = [], disableRules = [] } = {},
-) {
-  const builder = new AxeBuilder({ page }).withTags(tags);
-
-  exclude.forEach((sel) => builder.exclude(sel));
-  if (disableRules.length) builder.disableRules(disableRules);
-
-  return await builder.analyze();
-}
-
-// =======================
-// ARTIFACTS
-// =======================
 function ensureOutDir() {
   const outDir = path.join(process.cwd(), "test-results", "a11y");
   fs.mkdirSync(outDir, { recursive: true });
@@ -96,108 +81,132 @@ function countByImpact(violations = []) {
   return counts;
 }
 
+async function runA11yScan(
+  page,
+  { tags = TAGS_GATE, exclude = [], disableRules = [] } = {},
+) {
+  const builder = new AxeBuilder({ page }).withTags(tags);
+  exclude.forEach((sel) => builder.exclude(sel));
+  if (disableRules.length) builder.disableRules(disableRules);
+  return await builder.analyze();
+}
+
+// =======================
+// MAIN: TWO-PASS (Gate + Audit)
+// =======================
+async function runA11yTwoPass(page, { exclude = [], disableRules = [] } = {}) {
+  // 1) WCAG gate scan
+  const resultsGate = await runA11yScan(page, {
+    tags: TAGS_GATE,
+    exclude,
+    disableRules,
+  });
+
+  // 2) Audit scan (WCAG + best-practice)
+  const resultsAuditFull = await runA11yScan(page, {
+    tags: TAGS_AUDIT,
+    exclude,
+    disableRules,
+  });
+
+  const gateSplit = splitByImpact(resultsGate.violations || []);
+
+  // promoted (best-practice -> gate)
+  const promoted = (resultsAuditFull.violations || []).filter((v) =>
+    RULES_PROMOTED_TO_GATE.includes(v.id),
+  );
+
+  // audit bez promoted (da nema dupliranja)
+  const auditFindings = (resultsAuditFull.violations || []).filter(
+    (v) => !RULES_PROMOTED_TO_GATE.includes(v.id),
+  );
+
+  const auditSplit = splitByImpact(auditFindings);
+
+  // ovo je JEDINA istina šta blokira pipeline:
+  const blocking = [...gateSplit.blocking, ...promoted];
+
+  return {
+    resultsGate,
+    resultsAudit: { ...resultsAuditFull, violations: auditFindings },
+    blocking,
+    promoted,
+    backlog: auditSplit.backlog,
+  };
+}
+
+// =======================
+// ARTIFACTS (ovo rešava tvoj problem)
+// =======================
 function writeA11yArtifacts({
   testName,
   results,
   mode = "gate", // "gate" | "audit"
-  promoted = [], // promoted findings (audit → gate)
+  gateBlockers = [], // ✅ kad je gate: OBAVEZNO pošalji blocking ovde
+  promoted = [], // audit: lista promoted (informativno)
   writeRaw = false,
 }) {
-  const outDir = path.join(process.cwd(), "test-results", "a11y");
-  fs.mkdirSync(outDir, { recursive: true });
-
-  const safeName = testName.replace(/[^\w\-]+/g, "_").toLowerCase();
+  const outDir = ensureOutDir();
+  const safeName = safeFileName(testName);
 
   const summaryPath = path.join(outDir, `${safeName}.summary.json`);
   const prettyPath = path.join(outDir, `${safeName}.pretty.json`);
   const rawPath = path.join(outDir, `${safeName}.axe.json`);
 
-  // svi nalazi iz ovog rezultata
-  const violations = results.violations || [];
+  const violations = results?.violations || [];
 
-  // impact statistika (lep dodatak za diplomski)
-  const impactCounts = {
-    critical: 0,
-    serious: 0,
-    moderate: 0,
-    minor: 0,
-    unknown: 0,
-  };
+  // backlog je uvek minor iz *ovog* results-a (audit ili gate)
+  const { backlog } = splitByImpact(violations);
 
-  for (const v of violations) {
-    if (impactCounts[v.impact] !== undefined) impactCounts[v.impact]++;
-    else impactCounts.unknown++;
-  }
-
-  // standardni split (minor backlog)
-  const { blocking, backlog } = splitByImpact(violations);
-
-  // --- SUMMARY struktura zavisi od moda ---
+  let prettyForFile = violations;
   let summary;
 
   if (mode === "gate") {
+    // ✅ ključ: gate.pretty mora prikazati ono što BLOKIRA (WCAG + promoted)
+    prettyForFile = gateBlockers;
+
     summary = {
       testName,
       mode: "gate",
-      url: results.url,
+      url: results?.url,
       timestamp: new Date().toISOString(),
-
       counts: {
-        total: violations.length,
-        gateBlockers: blocking.length,
-        backlog: backlog.length,
-        byImpact: impactCounts,
+        gateBlockers: gateBlockers.length,
+        byImpact: countByImpact(gateBlockers),
       },
-
-      gateBlockers: summarizeViolations(blocking),
-      backlog: summarizeViolations(backlog),
+      gateBlockers: summarizeViolations(gateBlockers),
     };
-  }
-
-  if (mode === "audit") {
+  } else if (mode === "audit") {
     summary = {
       testName,
       mode: "audit",
-      url: results.url,
+      url: results?.url,
       timestamp: new Date().toISOString(),
-
       counts: {
-        total: violations.length,
         auditFindings: violations.length,
-        backlog: backlog.length,
+        byImpact: countByImpact(violations),
         promotedToGate: promoted.length,
-        byImpact: impactCounts,
       },
-
       auditFindings: summarizeViolations(violations),
-
-      // ova lista će rasti kako promovišeš pravila u gate
       promotedToGate: summarizeViolations(promoted),
-
       backlog: summarizeViolations(backlog),
     };
+  } else {
+    throw new Error(`writeA11yArtifacts: invalid mode "${mode}"`);
   }
 
-  // snimi summary
   fs.writeFileSync(summaryPath, JSON.stringify(summary, null, 2), "utf-8");
-
-  // pretty = full detalji (uvek isto)
   fs.writeFileSync(
     prettyPath,
-    JSON.stringify(prettyViolations(violations), null, 2),
+    JSON.stringify(prettyViolations(prettyForFile), null, 2),
     "utf-8",
   );
 
-  // raw opcionalno
   if (writeRaw) {
     fs.writeFileSync(rawPath, JSON.stringify(results, null, 2), "utf-8");
   }
 
-  return {
-    summaryPath,
-    prettyPath,
-    rawPath: writeRaw ? rawPath : null,
-  };
+  return { summaryPath, prettyPath, rawPath: writeRaw ? rawPath : null };
 }
 
 function appendToMinorBacklog({ testName, minorViolations }) {
@@ -237,7 +246,7 @@ function appendToMinorBacklogMarkdown({ testName, minorViolations }) {
   minorViolations.forEach((v) => {
     lines.push(`- **${v.id}** (${v.impact}) — ${v.help}`);
     lines.push(`  - ${v.helpUrl}`);
-    lines.push(`  - nodes: ${v.nodes.length}`);
+    lines.push(`  - nodes: ${(v.nodes || []).length}`);
   });
 
   lines.push("");
@@ -246,53 +255,12 @@ function appendToMinorBacklogMarkdown({ testName, minorViolations }) {
   return { mdPath };
 }
 
-// =======================
-// MAIN: TWO-PASS (Gate + Audit)
-// =======================
-async function runA11yTwoPass(page, { exclude = [], disableRules = [] } = {}) {
-  // Gate scan: WCAG only
-  const resultsGate = await runA11yScan(page, {
-    tags: TAGS_GATE,
-    exclude,
-    disableRules,
-  });
-
-  // Audit scan: WCAG + best-practice
-  const resultsAudit = await runA11yScan(page, {
-    tags: TAGS_AUDIT,
-    exclude,
-    disableRules,
-  });
-
-  // Gate blockers = WCAG blockers (critical/serious/moderate)
-  const gateSplit = splitByImpact(resultsGate.violations);
-
-  // Ako imaš promovisana best-practice pravila, ona ulaze u blocking
-  const promoted = resultsAudit.violations.filter((v) =>
-    RULES_PROMOTED_TO_GATE.includes(v.id),
-  );
-
-  // Backlog: uzimamo MINOR iz audit-a (da bude “dokaz/backlog”, ne blokira)
-  const auditSplit = splitByImpact(resultsAudit.violations);
-
-  return {
-    resultsGate,
-    resultsAudit,
-    blocking: [...gateSplit.blocking, ...promoted],
-    backlog: auditSplit.backlog,
-  };
-}
-
 module.exports = {
-  // config/export
   TAGS_GATE,
   TAGS_AUDIT,
   RULES_PROMOTED_TO_GATE,
 
-  // scan
   runA11yTwoPass,
-
-  // artifacts + logs (ovo test koristi)
   writeA11yArtifacts,
   appendToMinorBacklog,
   appendToMinorBacklogMarkdown,

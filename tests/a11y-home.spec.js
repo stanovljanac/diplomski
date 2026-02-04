@@ -1,75 +1,69 @@
 const { test, expect } = require("@playwright/test");
 
 const {
-  runA11yScan,
-  splitByImpact,
-  summarizeViolations,
+  runA11yTwoPass,
   writeA11yArtifacts,
   appendToMinorBacklog,
   appendToMinorBacklogMarkdown,
+  summarizeViolations,
 } = require("./helpers/a11y");
 
-test("HOME a11y (Phase 3 fail)", async ({ page }, testInfo) => {
-  // 1) Otvori HOME stranicu
-  await page.goto("/");
+test("HOME a11y (Phase 3)", async ({ page }, testInfo) => {
+  // 1) Open page + minimal “ready” checks
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("nav")).toBeVisible();
+  await page.evaluate(() => document.fonts?.ready);
+  await page.waitForTimeout(150);
+
+  // Screenshot for thesis evidence
   await page.screenshot({
     path: `test-results/a11y/${testInfo.title}.png`,
     fullPage: true,
   });
 
-  // 2) Pokreni axe scan (Phase 2 = uključujemo sve, i contrast)
-  const results = await runA11yScan(page, {
-    tags: ["wcag2a", "wcag2aa"],
-    disableRules: [], // ništa ne ignorišemo
+  // 2) Run 2-pass scan
+  const { resultsGate, resultsAudit, blocking, backlog } =
+    await runA11yTwoPass(page);
+
+  // 3) Save artifacts (gate + audit separately)
+  const gateArtifacts = writeA11yArtifacts({
+    testName: `${testInfo.title}__gate`,
+    results: resultsGate,
+    mode: "gate",
   });
 
-  // 3) Podeli rezultate:
-  // blocking = fail
-  // backlog = minor (samo zapis)
-  const { blocking, backlog } = splitByImpact(results.violations, {
-    blockingImpacts: ["critical", "serious", "moderate"],
-    backlogImpacts: ["minor"],
+  writeA11yArtifacts({
+    testName: `${testInfo.title}__audit`,
+    results: resultsAudit,
+    mode: "audit",
+    // promotedRuleIds: [] // za kasnije
   });
 
-  // 4) Sačuvaj artefakte (summary + pretty json)
-  const { summaryPath, prettyPath } = writeA11yArtifacts({
-    testName: testInfo.title,
-    results,
-    writeRaw: false,
-  });
-
-  // 5) BLOCKING problemi → fail + konzola
+  // 4) Console output (helpful in CI logs)
   if (blocking.length) {
-    console.log(`❌ BLOCKERS found on HOME!`);
-    console.log(`Detailed report: ${prettyPath}`);
-
+    console.log("❌ HOME blockers found.");
+    console.log(`Gate report: ${gateArtifacts.prettyPath}`);
     console.table(summarizeViolations(blocking));
   } else {
-    console.log("✅ No blockers on HOME page.");
+    console.log("✅ HOME: no gate blockers.");
   }
 
-  // 6) MINOR problemi → backlog export (ne ruši pipeline)
   if (backlog.length) {
-    console.log(`ℹ️ Minor issues found (saved to backlog).`);
-
-    // JSON backlog
     const { backlogPath } = appendToMinorBacklog({
       testName: testInfo.title,
       minorViolations: backlog,
     });
 
-    // Markdown backlog (lep za diplomski)
     const { mdPath } = appendToMinorBacklogMarkdown({
       testName: testInfo.title,
       minorViolations: backlog,
     });
 
-    console.log("Minor backlog JSON:", backlogPath);
-    console.log("Minor backlog Markdown:", mdPath);
-
+    console.log("ℹ️ HOME: minor backlog saved:", backlogPath);
+    console.log("ℹ️ HOME: minor backlog md:", mdPath);
     console.table(summarizeViolations(backlog));
   }
 
-  // 7) Pipeline fail uslov: blocking mora biti prazan
+  // 5) Gate condition
   expect(blocking).toEqual([]);
 });

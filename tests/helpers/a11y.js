@@ -8,15 +8,36 @@ const path = require("path");
 const TAGS_GATE = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"];
 const TAGS_AUDIT = [...TAGS_GATE, "best-practice"];
 
-// Best-practice pravila koja želiš da "promovišeš" i da BLOKIRAJU merge:
+// Best-practice pravila koja "promovišeš" u gate (blokiraju merge):
 const RULES_PROMOTED_TO_GATE = ["region"]; // npr ["region", "page-has-heading-one"]
 
 const DEFAULT_BLOCKING_IMPACTS = ["critical", "serious", "moderate"];
 const DEFAULT_BACKLOG_IMPACTS = ["minor"];
 
 // =======================
-// CORE HELPERS
+// UTIL
 // =======================
+function ensureOutDir() {
+  const outDir = path.join(process.cwd(), "test-results", "a11y");
+  fs.mkdirSync(outDir, { recursive: true });
+  return outDir;
+}
+
+function safeFileName(name) {
+  return String(name || "a11y")
+    .replace(/[^\w\-]+/g, "_")
+    .toLowerCase();
+}
+
+function countByImpact(violations = []) {
+  const counts = { critical: 0, serious: 0, moderate: 0, minor: 0, unknown: 0 };
+  for (const v of violations) {
+    if (counts[v.impact] !== undefined) counts[v.impact]++;
+    else counts.unknown++;
+  }
+  return counts;
+}
+
 function splitByImpact(
   violations,
   {
@@ -42,6 +63,9 @@ function summarizeViolations(violations) {
     help: v.help,
     nodes: v.nodes?.length || 0,
     helpUrl: v.helpUrl,
+    // meta (checkpoint)
+    step: v.__meta?.step,
+    url: v.__meta?.url,
   }));
 }
 
@@ -52,6 +76,8 @@ function prettyViolations(violations) {
     help: v.help,
     helpUrl: v.helpUrl,
     tags: v.tags,
+    step: v.__meta?.step,
+    url: v.__meta?.url,
     nodes: (v.nodes || []).map((n) => ({
       target: Array.isArray(n.target)
         ? n.target.join(", ")
@@ -62,25 +88,40 @@ function prettyViolations(violations) {
   }));
 }
 
-function ensureOutDir() {
-  const outDir = path.join(process.cwd(), "test-results", "a11y");
-  fs.mkdirSync(outDir, { recursive: true });
-  return outDir;
+// Dedupe ključ: rule id + impact + target set
+function violationKey(v) {
+  const targets =
+    (v.nodes || [])
+      .flatMap((n) =>
+        Array.isArray(n.target) ? n.target : [String(n.target || "")],
+      )
+      .join("|") || "";
+  return `${v.id}__${v.impact || "unknown"}__${targets}`;
 }
 
-function safeFileName(name) {
-  return name.replace(/[^\w\-]+/g, "_").toLowerCase();
-}
+function dedupeViolations(list, mode = "perCheckpoint") {
+  if (!list?.length) return [];
+  if (mode === "none") return list;
 
-function countByImpact(violations = []) {
-  const counts = { critical: 0, serious: 0, moderate: 0, minor: 0, unknown: 0 };
-  for (const v of violations) {
-    if (counts[v.impact] !== undefined) counts[v.impact]++;
-    else counts.unknown++;
+  const seen = new Set();
+  const out = [];
+
+  for (const v of list) {
+    const base = violationKey(v);
+    const key =
+      mode === "global" ? base : `${v.__meta?.step || "unknown"}__${base}`;
+
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(v);
   }
-  return counts;
+
+  return out;
 }
 
+// =======================
+// AXE SCAN
+// =======================
 async function runA11yScan(
   page,
   { tags = TAGS_GATE, exclude = [], disableRules = [] } = {},
@@ -92,7 +133,7 @@ async function runA11yScan(
 }
 
 // =======================
-// MAIN: TWO-PASS (Gate + Audit)
+// TWO-PASS (Gate + Audit)
 // =======================
 async function runA11yTwoPass(page, { exclude = [], disableRules = [] } = {}) {
   // 1) WCAG gate scan
@@ -123,7 +164,7 @@ async function runA11yTwoPass(page, { exclude = [], disableRules = [] } = {}) {
 
   const auditSplit = splitByImpact(auditFindings);
 
-  // ovo je JEDINA istina šta blokira pipeline:
+  // jedina istina šta blokira pipeline:
   const blocking = [...gateSplit.blocking, ...promoted];
 
   return {
@@ -136,79 +177,171 @@ async function runA11yTwoPass(page, { exclude = [], disableRules = [] } = {}) {
 }
 
 // =======================
-// ARTIFACTS (ovo rešava tvoj problem)
+// AGGREGATED RUN API
 // =======================
-function writeA11yArtifacts({
-  testName,
-  results,
-  mode = "gate", // "gate" | "audit"
-  gateBlockers = [], // ✅ kad je gate: OBAVEZNO pošalji blocking ovde
-  promoted = [], // audit: lista promoted (informativno)
-  writeRaw = false,
-}) {
-  const outDir = ensureOutDir();
-  const safeName = safeFileName(testName);
+function createA11yRun({ testName, dedupeMode = "perCheckpoint" } = {}) {
+  return {
+    testName: testName || "a11y-run",
+    startedAt: new Date().toISOString(),
+    dedupeMode,
 
-  const summaryPath = path.join(outDir, `${safeName}.summary.json`);
-  const prettyPath = path.join(outDir, `${safeName}.pretty.json`);
-  const rawPath = path.join(outDir, `${safeName}.axe.json`);
+    checkpoints: [],
 
-  const violations = results?.violations || [];
+    // raw aggregated lists (with __meta)
+    blockingAll: [],
+    promotedAll: [],
+    auditAll: [],
+    backlogAll: [],
+  };
+}
 
-  // backlog je uvek minor iz *ovog* results-a (audit ili gate)
-  const { backlog } = splitByImpact(violations);
+function attachMetaToViolations(violations, meta) {
+  return (violations || []).map((v) => ({
+    ...v,
+    __meta: meta,
+  }));
+}
 
-  let prettyForFile = violations;
-  let summary;
+async function scanCheckpoint(
+  page,
+  a11yRun,
+  step,
+  { exclude = [], disableRules = [], screenshot = false, testInfo = null } = {},
+) {
+  if (!a11yRun) throw new Error("scanCheckpoint: a11yRun is required");
+  if (!step) throw new Error("scanCheckpoint: step label is required");
 
-  if (mode === "gate") {
-    // ✅ ključ: gate.pretty mora prikazati ono što BLOKIRA (WCAG + promoted)
-    prettyForFile = gateBlockers;
+  const meta = { step, url: page.url(), ts: new Date().toISOString() };
 
-    summary = {
-      testName,
-      mode: "gate",
-      url: results?.url,
-      timestamp: new Date().toISOString(),
-      counts: {
-        gateBlockers: gateBlockers.length,
-        byImpact: countByImpact(gateBlockers),
-      },
-      gateBlockers: summarizeViolations(gateBlockers),
-    };
-  } else if (mode === "audit") {
-    summary = {
-      testName,
-      mode: "audit",
-      url: results?.url,
-      timestamp: new Date().toISOString(),
-      counts: {
-        auditFindings: violations.length,
-        byImpact: countByImpact(violations),
-        promotedToGate: promoted.length,
-      },
-      auditFindings: summarizeViolations(violations),
-      promotedToGate: summarizeViolations(promoted),
-      backlog: summarizeViolations(backlog),
-    };
-  } else {
-    throw new Error(`writeA11yArtifacts: invalid mode "${mode}"`);
+  // optional screenshot evidence per step (samo ako želiš)
+  if (screenshot && testInfo) {
+    const outDir = ensureOutDir();
+    const safeName = safeFileName(`${a11yRun.testName}__${step}`);
+    await page.screenshot({
+      path: path.join(outDir, `${safeName}.png`),
+      fullPage: true,
+    });
   }
 
-  fs.writeFileSync(summaryPath, JSON.stringify(summary, null, 2), "utf-8");
+  const { resultsGate, resultsAudit, blocking, backlog, promoted } =
+    await runA11yTwoPass(page, { exclude, disableRules });
+
+  const blockingM = attachMetaToViolations(blocking, meta);
+  const promotedM = attachMetaToViolations(promoted, meta);
+  const backlogM = attachMetaToViolations(backlog, meta);
+  const auditM = attachMetaToViolations(resultsAudit.violations || [], meta);
+
+  a11yRun.blockingAll.push(...blockingM);
+  a11yRun.promotedAll.push(...promotedM);
+  a11yRun.backlogAll.push(...backlogM);
+  a11yRun.auditAll.push(...auditM);
+
+  a11yRun.checkpoints.push({
+    step,
+    url: meta.url,
+    timestamp: meta.ts,
+    counts: {
+      blocking: blocking.length,
+      audit: (resultsAudit.violations || []).length,
+      backlog: backlog.length,
+      promoted: promoted.length,
+    },
+  });
+
+  return {
+    blockingCount: blocking.length,
+    auditCount: (resultsAudit.violations || []).length,
+    backlogCount: backlog.length,
+  };
+}
+
+// =======================
+// FINAL ARTIFACTS (1 gate + 1 audit)
+// =======================
+function writeAggregatedArtifacts(a11yRun) {
+  const outDir = ensureOutDir();
+  const safeName = safeFileName(a11yRun.testName);
+
+  const gateSummaryPath = path.join(outDir, `${safeName}__gate.summary.json`);
+  const gatePrettyPath = path.join(outDir, `${safeName}__gate.pretty.json`);
+
+  const auditSummaryPath = path.join(outDir, `${safeName}__audit.summary.json`);
+  const auditPrettyPath = path.join(outDir, `${safeName}__audit.pretty.json`);
+
+  const blockingAll = dedupeViolations(a11yRun.blockingAll, a11yRun.dedupeMode);
+  const auditAll = dedupeViolations(a11yRun.auditAll, a11yRun.dedupeMode);
+  const promotedAll = dedupeViolations(a11yRun.promotedAll, a11yRun.dedupeMode);
+  const backlogAll = dedupeViolations(a11yRun.backlogAll, a11yRun.dedupeMode);
+
+  // Gate summary
+  const gateSummary = {
+    testName: a11yRun.testName,
+    mode: "gate",
+    startedAt: a11yRun.startedAt,
+    finishedAt: new Date().toISOString(),
+    checkpointCount: a11yRun.checkpoints.length,
+    checkpoints: a11yRun.checkpoints,
+    counts: {
+      gateBlockers: blockingAll.length,
+      byImpact: countByImpact(blockingAll),
+    },
+    gateBlockers: summarizeViolations(blockingAll),
+  };
+
+  // Audit summary
+  const auditSummary = {
+    testName: a11yRun.testName,
+    mode: "audit",
+    startedAt: a11yRun.startedAt,
+    finishedAt: new Date().toISOString(),
+    checkpointCount: a11yRun.checkpoints.length,
+    checkpoints: a11yRun.checkpoints,
+    counts: {
+      auditFindings: auditAll.length,
+      byImpact: countByImpact(auditAll),
+      promotedToGate: promotedAll.length,
+      backlogMinor: backlogAll.length,
+    },
+    auditFindings: summarizeViolations(auditAll),
+    promotedToGate: summarizeViolations(promotedAll),
+    backlog: summarizeViolations(backlogAll),
+  };
+
   fs.writeFileSync(
-    prettyPath,
-    JSON.stringify(prettyViolations(prettyForFile), null, 2),
+    gateSummaryPath,
+    JSON.stringify(gateSummary, null, 2),
+    "utf-8",
+  );
+  fs.writeFileSync(
+    gatePrettyPath,
+    JSON.stringify(prettyViolations(blockingAll), null, 2),
     "utf-8",
   );
 
-  if (writeRaw) {
-    fs.writeFileSync(rawPath, JSON.stringify(results, null, 2), "utf-8");
-  }
+  fs.writeFileSync(
+    auditSummaryPath,
+    JSON.stringify(auditSummary, null, 2),
+    "utf-8",
+  );
+  fs.writeFileSync(
+    auditPrettyPath,
+    JSON.stringify(prettyViolations(auditAll), null, 2),
+    "utf-8",
+  );
 
-  return { summaryPath, prettyPath, rawPath: writeRaw ? rawPath : null };
+  return {
+    gateSummaryPath,
+    gatePrettyPath,
+    auditSummaryPath,
+    auditPrettyPath,
+    blockingAll,
+    auditAll,
+    backlogAll,
+    promotedAll,
+  };
 }
 
+// backlog u 1 fajl (1 entry po test run-u)
 function appendToMinorBacklog({ testName, minorViolations }) {
   const outDir = ensureOutDir();
   const backlogPath = path.join(outDir, "minor-backlog.json");
@@ -245,6 +378,8 @@ function appendToMinorBacklogMarkdown({ testName, minorViolations }) {
 
   minorViolations.forEach((v) => {
     lines.push(`- **${v.id}** (${v.impact}) — ${v.help}`);
+    if (v.__meta?.step) lines.push(`  - step: ${v.__meta.step}`);
+    if (v.__meta?.url) lines.push(`  - url: ${v.__meta.url}`);
     lines.push(`  - ${v.helpUrl}`);
     lines.push(`  - nodes: ${(v.nodes || []).length}`);
   });
@@ -255,14 +390,59 @@ function appendToMinorBacklogMarkdown({ testName, minorViolations }) {
   return { mdPath };
 }
 
+function finalizeA11yRun(a11yRun, { writeBacklog = true } = {}) {
+  const {
+    gateSummaryPath,
+    gatePrettyPath,
+    auditSummaryPath,
+    auditPrettyPath,
+    blockingAll,
+    backlogAll,
+  } = writeAggregatedArtifacts(a11yRun);
+
+  // backlog (minor) upiši jednom po testu (ako želiš)
+  if (writeBacklog && backlogAll.length) {
+    appendToMinorBacklog({
+      testName: a11yRun.testName,
+      minorViolations: backlogAll,
+    });
+    appendToMinorBacklogMarkdown({
+      testName: a11yRun.testName,
+      minorViolations: backlogAll,
+    });
+  }
+
+  // mali console output
+  if (blockingAll.length) {
+    console.log("❌ A11y gate blockers found.");
+    console.log("Gate summary:", gateSummaryPath);
+    console.log("Gate pretty:", gatePrettyPath);
+  } else {
+    console.log("✅ A11y gate: no blockers.");
+    console.log("Gate summary:", gateSummaryPath);
+  }
+
+  console.log("Audit summary:", auditSummaryPath);
+  console.log("Audit pretty:", auditPrettyPath);
+
+  return { blockingAll, backlogAll };
+}
+
 module.exports = {
   TAGS_GATE,
   TAGS_AUDIT,
   RULES_PROMOTED_TO_GATE,
 
+  // existing
   runA11yTwoPass,
-  writeA11yArtifacts,
+  summarizeViolations,
+
+  // new aggregated API
+  createA11yRun,
+  scanCheckpoint,
+  finalizeA11yRun,
+
+  // backlog
   appendToMinorBacklog,
   appendToMinorBacklogMarkdown,
-  summarizeViolations,
 };

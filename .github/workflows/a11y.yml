@@ -23,7 +23,6 @@ jobs:
       # Playwright creds
       PW_ADMIN_EMAIL: ${{ secrets.PW_ADMIN_EMAIL }}
       PW_ADMIN_PASSWORD: ${{ secrets.PW_ADMIN_PASSWORD }}
-      PW_USER_EMAIL: ${{ secrets.PW_USER_EMAIL }}
 
       CI: true
       BASE_URL: http://127.0.0.1:3000

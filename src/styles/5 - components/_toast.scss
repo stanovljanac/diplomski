@@ -21,6 +21,7 @@
 
 .toast-msg {
   font-weight: bold;
+  font-size: 14px;
 }
 
 .toast-error {
@@ -44,12 +45,12 @@
 }
 
 .toast-success {
-  color: $primary;
-  border: 1px solid $primary;
+  color: $primary-hover;
+  border: 1px solid $primary-hover;
   padding: $m-size;
   background: $white;
   .toast-msg {
-    color: $primary;
+    color: $primary-hover;
   }
 }
 

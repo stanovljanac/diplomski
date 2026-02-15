@@ -45,11 +45,9 @@
 
 .toast-success {
   color: $primary;
-  border: 1px solid $green;
+  border: 1px solid $primary;
   padding: $m-size;
-  background-color: $primary;
-  background: #fff;
-
+  background: $white;
   .toast-msg {
     color: $primary;
   }

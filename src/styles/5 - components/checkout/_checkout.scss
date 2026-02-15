@@ -1,6 +1,6 @@
 .checkout {
   width: 100%;
-  animation: slide-up .5s ease;
+  animation: slide-up 0.5s ease;
 
   @include mobile {
     margin-top: 2rem;
@@ -28,7 +28,7 @@
   // justify-content: center;
 
   .basket-item {
-    margin: .5rem 1rem;
+    margin: 0.5rem 1rem;
 
     @include mobile {
       margin: 0;
@@ -51,7 +51,7 @@
   }
 
   &:before {
-    content: '';
+    content: "";
     position: absolute;
     top: 15px;
     left: 0;
@@ -59,7 +59,7 @@
     margin: auto;
     width: 85%;
     height: 3px;
-    background: transparentize($border-color, .5);
+    background: transparentize($border-color, 0.5);
   }
 }
 
@@ -87,11 +87,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  color: $gray-10;
+  color: $paragraph-color;
 }
 
 .checkout-header-subtitle {
-  color: $gray-20;
+  color: $paragraph-color;
   margin-top: $s-size;
   margin-bottom: 0;
 }
@@ -166,9 +166,9 @@
 .checkout-field {
   width: 100%;
   margin: 0 $s-size;
-  
+
   @include mobile {
-    margin: 0
+    margin: 0;
   }
 }
 
@@ -191,11 +191,11 @@
   flex-direction: column;
   height: 97px;
   overflow: hidden;
-  transition: all .5s ease;
-  opacity: .6;
+  transition: all 0.5s ease;
+  opacity: 1;
 
   &:hover {
-    opacity: 1;
+    opacity: 0.8;
   }
 }
 
@@ -204,8 +204,50 @@
   align-items: center;
   justify-content: space-between;
   padding: $m-size;
-  border: 1px solid $border-color;
-  background: #f1f1f1;
+  border: 2px solid $gray-01; /* neutral border */
+  background: #ffffff;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+/* TEXT COLORS - AA SAFE */
+.checkout-checkbox-field h4 {
+  color: #1f2937; /* dark gray */
+}
+
+.checkout-checkbox-field .text-subtle {
+  color: #374151; /* darker gray */
+  font-weight: 500;
+}
+
+/* HOVER */
+.checkout-checkbox-field:hover {
+  border-color: $black;
+}
+
+/* SELECTED STATE */
+.checkout-checkbox-field.is-selected {
+  border-color: $primary;
+  box-shadow: 0 0 0 3px rgba($primary, 0.15);
+}
+
+/* Selected title */
+.checkout-checkbox-field.is-selected h4 {
+  color: $primary;
+}
+
+/* Selected subtitle */
+.checkout-checkbox-field.is-selected .text-subtle {
+  color: #065f46; /* dark green */
+}
+
+/* Optional checkmark */
+.checkout-checkbox-field.is-selected::after {
+  content: "✔";
+  color: $primary;
+  font-weight: bold;
+  margin-left: 10px;
 }
 
 .checkout-shipping-action {
@@ -241,10 +283,10 @@
 .payment-img {
   width: 48px;
   height: 32px;
-  background: url('/static/creditcards.png');
+  background: url("/static/creditcards.png");
   background-size: 300px 200px;
-  filter: grayscale(1);
   border-radius: 2px;
+  border: 1px solid $gray-01;
 }
 
 .payment-img-paypal {

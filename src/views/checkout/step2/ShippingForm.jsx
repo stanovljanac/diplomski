@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import { CustomInput, CustomMobileInput } from '@/components/formik';
-import { Field, useFormikContext } from 'formik';
-import React from 'react';
+import { CustomInput, CustomMobileInput } from "@/components/formik";
+import { Field, useFormikContext } from "formik";
+import React from "react";
 
 const ShippingForm = () => {
   const { values } = useFormikContext();
@@ -16,7 +16,7 @@ const ShippingForm = () => {
               label="* Full Name"
               placeholder="Enter your full name"
               component={CustomInput}
-              style={{ textTransform: 'capitalize' }}
+              style={{ textTransform: "capitalize" }}
             />
           </div>
           <div className="d-block checkout-field">
@@ -51,19 +51,23 @@ const ShippingForm = () => {
                   <span className="label-input label-error">{meta.error}</span>
                 ) : (
                   // eslint-disable-next-line jsx-a11y/label-has-associated-control
-                  <label
-                    className="label-input"
-                    htmlFor={field.name}
-                  >
+                  <label className="label-input" htmlFor={field.name}>
                     Shipping Option
                   </label>
                 )}
-                <div className="checkout-checkbox-field">
+                <div
+                  className={`checkout-checkbox-field ${
+                    values.type === "paypal" ? "is-selected" : ""
+                  }`}
+                >
                   <input
                     checked={field.value}
                     id={field.name}
                     onChange={(e) => {
-                      form.setValues({ ...form.values, [field.name]: e.target.checked });
+                      form.setValues({
+                        ...form.values,
+                        [field.name]: e.target.checked,
+                      });
                     }}
                     value={meta.value}
                     type="checkbox"

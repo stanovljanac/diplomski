@@ -269,7 +269,13 @@ function writeAggregatedArtifacts(a11yRun) {
   const auditPrettyPath = path.join(outDir, `${safeName}__audit.pretty.json`);
 
   const blockingAll = dedupeViolations(a11yRun.blockingAll, a11yRun.dedupeMode);
-  const auditAll = dedupeViolations(a11yRun.auditAll, a11yRun.dedupeMode);
+  const blockingKeys = new Set(blockingAll.map((v) => violationKey(v)));
+
+  const auditAll = dedupeViolations(
+    a11yRun.auditAll.filter((v) => !blockingKeys.has(violationKey(v))),
+    a11yRun.dedupeMode,
+  );
+
   const promotedAll = dedupeViolations(a11yRun.promotedAll, a11yRun.dedupeMode);
   const backlogAll = dedupeViolations(a11yRun.backlogAll, a11yRun.dedupeMode);
 

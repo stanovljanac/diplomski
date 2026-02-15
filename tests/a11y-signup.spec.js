@@ -1,75 +1,37 @@
 const { test, expect } = require("@playwright/test");
 
 const {
-  runA11yTwoPass,
-  writeA11yArtifacts,
-  appendToMinorBacklog,
-  appendToMinorBacklogMarkdown,
-  summarizeViolations,
+  createA11yRun,
+  scanCheckpoint,
+  finalizeA11yRun,
 } = require("./helpers/a11y");
 
 test("SIGNUP a11y (Phase 3)", async ({ page }, testInfo) => {
-  // 1) Open page + minimal ready check
+  // 1️⃣ Init aggregated run
+  const a11yRun = createA11yRun({
+    testName: testInfo.title,
+  });
+
+  // 2️⃣ Open page
   await page.goto("/signup", { waitUntil: "domcontentloaded" });
 
   await expect(page.locator("nav")).toBeVisible();
+
   await page.evaluate(async () => {
     if (document.fonts?.ready) await document.fonts.ready;
   });
 
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(1000);
 
-  // Screenshot evidence
-  await page.screenshot({
-    path: `test-results/a11y/${testInfo.title}.png`,
-    fullPage: true,
+  // 3️⃣ Scan checkpoint
+  await scanCheckpoint(page, a11yRun, "signup_initial", {
+    screenshot: true,
+    testInfo,
   });
 
-  // 2) Run 2-pass scan
-  const { resultsGate, resultsAudit, blocking, backlog, promoted } =
-    await runA11yTwoPass(page);
+  // 4️⃣ Finalize
+  const { blockingAll } = finalizeA11yRun(a11yRun);
 
-  // 3) Save artifacts
-  const gateArtifacts = writeA11yArtifacts({
-    testName: `${testInfo.title}__gate`,
-    results: resultsGate,
-    mode: "gate",
-    gateBlockers: blocking,
-  });
-
-  writeA11yArtifacts({
-    testName: `${testInfo.title}__audit`,
-    results: resultsAudit,
-    mode: "audit",
-    promoted,
-  });
-
-  // 4) Output
-  if (blocking.length) {
-    console.log("❌ SIGNUP blockers found.");
-    console.log(`Gate report: ${gateArtifacts.prettyPath}`);
-    console.table(summarizeViolations(blocking));
-  } else {
-    console.log("✅ SIGNUP: no gate blockers.");
-  }
-
-  // 5) Backlog export
-  if (backlog.length) {
-    const { backlogPath } = appendToMinorBacklog({
-      testName: testInfo.title,
-      minorViolations: backlog,
-    });
-
-    const { mdPath } = appendToMinorBacklogMarkdown({
-      testName: testInfo.title,
-      minorViolations: backlog,
-    });
-
-    console.log("ℹ️ SIGNUP: minor backlog saved:", backlogPath);
-    console.log("ℹ️ SIGNUP: minor backlog md:", mdPath);
-    console.table(summarizeViolations(backlog));
-  }
-
-  // 6) Gate condition
-  expect(blocking).toEqual([]);
+  // 5️⃣ Gate condition
+  expect(blockingAll).toEqual([]);
 });

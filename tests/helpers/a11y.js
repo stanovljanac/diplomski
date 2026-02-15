@@ -426,6 +426,7 @@ function finalizeA11yRun(a11yRun, { writeBacklog = true } = {}) {
   } else {
     console.log("✅ A11y gate: no blockers.");
     console.log("Gate summary:", gateSummaryPath);
+    console.log("Gate pretty:", gatePrettyPath);
   }
 
   console.log("Audit summary:", auditSummaryPath);

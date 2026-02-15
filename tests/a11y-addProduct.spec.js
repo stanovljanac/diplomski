@@ -1,19 +1,24 @@
 const { test, expect } = require("@playwright/test");
 
 const {
-  runA11yTwoPass,
-  writeA11yArtifacts,
-  appendToMinorBacklog,
-  appendToMinorBacklogMarkdown,
-  summarizeViolations,
+  createA11yRun,
+  scanCheckpoint,
+  finalizeA11yRun,
 } = require("./helpers/a11y");
 
 test("ADMIN ADD a11y (Phase 3)", async ({ page }, testInfo) => {
-  // 1) Open signin
-  await page.goto("/signin", { waitUntil: "domcontentloaded" });
-  await expect(page.locator("nav")).toBeVisible();
+  // ===============================
+  // 1️⃣ INIT AGGREGATED RUN
+  // ===============================
+  const a11yRun = createA11yRun({
+    testName: testInfo.title,
+  });
 
-  // --- LOGIN CREDS ---
+  // ===============================
+  // 2️⃣ LOGIN
+  // ===============================
+  await page.goto("/signin", { waitUntil: "domcontentloaded" });
+
   const email = process.env.PW_ADMIN_EMAIL;
   const pass = process.env.PW_ADMIN_PASSWORD;
 
@@ -23,85 +28,38 @@ test("ADMIN ADD a11y (Phase 3)", async ({ page }, testInfo) => {
     );
   }
 
-  // Fill login form
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(pass);
   await page.getByRole("button", { name: /sign in/i }).click();
 
-  // 2) Go directly to admin/add
+  // ===============================
+  // 3️⃣ GO TO ADD PRODUCT PAGE
+  // ===============================
   await page.goto("/admin/add", { waitUntil: "domcontentloaded" });
 
-  // Stable UI check
   await expect(page.locator("nav")).toBeVisible();
+
   await page.evaluate(async () => {
     if (document.fonts?.ready) await document.fonts.ready;
   });
 
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(1000);
 
-  // Screenshot evidence
-  await page.screenshot({
-    path: `test-results/a11y/${testInfo.title}.png`,
-    fullPage: true,
+  // ===============================
+  // 4️⃣ SCAN CHECKPOINT
+  // ===============================
+  await scanCheckpoint(page, a11yRun, "admin_add_page", {
+    screenshot: true,
+    testInfo,
   });
 
-  // Hard login validation
-  const stillOnSignin = await page
-    .getByRole("button", { name: /sign in/i })
-    .isVisible()
-    .catch(() => false);
+  // ===============================
+  // 5️⃣ FINALIZE (writes artifacts + backlog)
+  // ===============================
+  const { blockingAll } = finalizeA11yRun(a11yRun);
 
-  if (stillOnSignin) {
-    throw new Error(
-      "Login failed: still seeing Sign In button. Check admin role + credentials.",
-    );
-  }
-
-  // 3) Run 2-pass scan
-  const { resultsGate, resultsAudit, blocking, backlog, promoted } =
-    await runA11yTwoPass(page);
-
-  // 4) Save artifacts
-  const gateArtifacts = writeA11yArtifacts({
-    testName: `${testInfo.title}__gate`,
-    results: resultsGate,
-    mode: "gate",
-    gateBlockers: blocking,
-  });
-
-  writeA11yArtifacts({
-    testName: `${testInfo.title}__audit`,
-    results: resultsAudit,
-    mode: "audit",
-    promoted,
-  });
-
-  // 5) Output
-  if (blocking.length) {
-    console.log("❌ ADMIN/ADD blockers found.");
-    console.log(`Gate report: ${gateArtifacts.prettyPath}`);
-    console.table(summarizeViolations(blocking));
-  } else {
-    console.log("✅ ADMIN/ADD: no gate blockers.");
-  }
-
-  // 6) Backlog export
-  if (backlog.length) {
-    const { backlogPath } = appendToMinorBacklog({
-      testName: testInfo.title,
-      minorViolations: backlog,
-    });
-
-    const { mdPath } = appendToMinorBacklogMarkdown({
-      testName: testInfo.title,
-      minorViolations: backlog,
-    });
-
-    console.log("ℹ️ ADMIN/ADD: minor backlog saved:", backlogPath);
-    console.log("ℹ️ ADMIN/ADD: minor backlog md:", mdPath);
-    console.table(summarizeViolations(backlog));
-  }
-
-  // 7) Gate condition
-  expect(blocking).toEqual([]);
+  // ===============================
+  // 6️⃣ GATE ASSERTION
+  // ===============================
+  expect(blockingAll).toEqual([]);
 });

@@ -1,79 +1,97 @@
-import { ArrowRightOutlined, LoadingOutlined } from '@ant-design/icons';
-import { SocialLogin } from '@/components/common';
-import { CustomInput } from '@/components/formik';
-import { SIGNIN } from '@/constants/routes';
-import { Field, Form, Formik } from 'formik';
-import { useDocumentTitle, useScrollTop } from '@/hooks';
-import PropType from 'prop-types';
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { signUp } from '@/redux/actions/authActions';
-import { setAuthenticating, setAuthStatus } from '@/redux/actions/miscActions';
-import * as Yup from 'yup';
+import { ArrowRightOutlined, LoadingOutlined } from "@ant-design/icons";
+import { SocialLogin } from "@/components/common";
+import { CustomInput } from "@/components/formik";
+import { SIGNIN } from "@/constants/routes";
+import { Field, Form, Formik } from "formik";
+import { useDocumentTitle, useScrollTop } from "@/hooks";
+import PropType from "prop-types";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { signUp } from "@/redux/actions/authActions";
+import { setAuthenticating, setAuthStatus } from "@/redux/actions/miscActions";
+import * as Yup from "yup";
 
 const SignInSchema = Yup.object().shape({
   email: Yup.string()
-    .email('Email is not valid.')
-    .required('Email is required.'),
+    .email("Email is not valid.")
+    .required("Email is required."),
   password: Yup.string()
-    .required('Password is required.')
-    .min(8, 'Password length should be at least 8 characters.')
-    .matches(/[A-Z\W]/g, 'Password should contain at least 1 uppercase letter.'),
+    .required("Password is required.")
+    .min(8, "Password length should be at least 8 characters.")
+    .matches(
+      /[A-Z\W]/g,
+      "Password should contain at least 1 uppercase letter.",
+    ),
   fullname: Yup.string()
-    .required('Full name is required.')
-    .min(4, 'Name should be at least 4 characters.')
+    .required("Full name is required.")
+    .min(4, "Name should be at least 4 characters."),
 });
 
 const SignUp = ({ history }) => {
   const { isAuthenticating, authStatus } = useSelector((state) => ({
     isAuthenticating: state.app.isAuthenticating,
-    authStatus: state.app.authStatus
+    authStatus: state.app.authStatus,
   }));
   const dispatch = useDispatch();
 
   useScrollTop();
-  useDocumentTitle('Sign Up | Salinaka');
+  useDocumentTitle("Sign Up | Salinaka");
 
-  useEffect(() => () => {
-    dispatch(setAuthStatus(null));
-    dispatch(setAuthenticating(false));
-  }, []);
+  useEffect(
+    () => () => {
+      dispatch(setAuthStatus(null));
+      dispatch(setAuthenticating(false));
+    },
+    [],
+  );
 
   const onClickSignIn = () => history.push(SIGNIN);
 
   const onFormSubmit = (form) => {
-    dispatch(signUp({
-      fullname: form.fullname.trim(),
-      email: form.email.trim().toLowerCase(),
-      password: form.password.trim()
-    }));
+    dispatch(
+      signUp({
+        fullname: form.fullname.trim(),
+        email: form.email.trim().toLowerCase(),
+        password: form.password.trim(),
+      }),
+    );
   };
 
   return (
     <div className="auth-content">
       {authStatus?.success && (
         <div className="loader">
-          <h3 className="toast-success auth-success">
-            {authStatus?.message}
+          <div
+            className="toast-success auth-success"
+            role="status"
+            aria-live="polite"
+          >
+            <span>{authStatus?.message}</span>
             <LoadingOutlined />
-          </h3>
+          </div>
         </div>
       )}
       {!authStatus?.success && (
         <>
           {authStatus?.message && (
-            <h5 className="text-center toast-error">
-              {authStatus?.message}
-            </h5>
+            <div
+              className="text-center toast-error"
+              role="alert"
+              aria-live="assertive"
+            >
+              <span>{authStatus?.message}</span>
+            </div>
           )}
-          <div className={`auth ${authStatus?.message && (!authStatus?.success && 'input-error')}`}>
+          <div
+            className={`auth ${authStatus?.message && !authStatus?.success && "input-error"}`}
+          >
             <div className="auth-main">
               <h3>Sign up to Salinaka</h3>
               <Formik
                 initialValues={{
-                  fullname: '',
-                  email: '',
-                  password: ''
+                  fullname: "",
+                  email: "",
+                  password: "",
                 }}
                 validateOnChange
                 validationSchema={SignInSchema}
@@ -88,7 +106,7 @@ const SignUp = ({ history }) => {
                         type="text"
                         label="* Full Name"
                         placeholder="John Doe"
-                        style={{ textTransform: 'capitalize' }}
+                        style={{ textTransform: "capitalize" }}
                         component={CustomInput}
                       />
                     </div>
@@ -100,6 +118,7 @@ const SignUp = ({ history }) => {
                         label="* Email"
                         placeholder="test@example.com"
                         component={CustomInput}
+                        id="email"
                       />
                     </div>
                     <div className="auth-field">
@@ -119,9 +138,13 @@ const SignUp = ({ history }) => {
                         disabled={isAuthenticating}
                         type="submit"
                       >
-                        {isAuthenticating ? 'Signing Up' : 'Sign Up'}
+                        {isAuthenticating ? "Signing Up" : "Sign Up"}
                         &nbsp;
-                        {isAuthenticating ? <LoadingOutlined /> : <ArrowRightOutlined />}
+                        {isAuthenticating ? (
+                          <LoadingOutlined />
+                        ) : (
+                          <ArrowRightOutlined />
+                        )}
                       </button>
                     </div>
                   </Form>
@@ -154,8 +177,8 @@ const SignUp = ({ history }) => {
 
 SignUp.propTypes = {
   history: PropType.shape({
-    push: PropType.func
-  }).isRequired
+    push: PropType.func,
+  }).isRequired,
 };
 
 export default SignUp;

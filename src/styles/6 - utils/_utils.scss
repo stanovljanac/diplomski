@@ -1,4 +1,4 @@
-// 
+//
 // UTILS ---------
 //
 
@@ -9,7 +9,6 @@
 .h-100 {
   height: 100%;
 }
-
 
 .d-block {
   display: block;
@@ -66,6 +65,7 @@
 .text-link {
   &:hover {
     cursor: pointer;
+    text-decoration: underline;
   }
 }
 
@@ -78,7 +78,7 @@
   display: block;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; 
+  text-overflow: ellipsis;
 }
 
 .input-valid {
@@ -94,7 +94,7 @@
 }
 
 .text-subtle {
-  color: $gray-10;
+  color: $paragraph-color;
 }
 
 .padding-0 {
@@ -238,7 +238,7 @@
 }
 
 .text-subtle {
-  color: $gray-10;
+  color: $paragraph-color;
 }
 
 .text-italic {

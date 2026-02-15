@@ -15,42 +15,42 @@ input {
 
 input::-webkit-input-placeholder {
   font-weight: bold;
-  opacity: .7;
+  opacity: 0.8;
 }
 
 input:read-only:not(.price-range-input) {
-  opacity: .5;
+  opacity: 0.8;
 
   &:hover {
     cursor: default;
   }
 }
 
-input[type=tel] {
+input[type="tel"] {
   background: transparent;
   border-radius: 0;
   padding-left: 48px !important;
 }
 
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
-input[type=number]::-webkit-outer-spin-button,
-input[type=number]::-webkit-inner-spin-button {
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
-input[type=number]:invalid,
-input[type=number]:out-of-range {
+input[type="number"]:invalid,
+input[type="number"]:out-of-range {
   border: 2px solid #ff6347;
 }
 
-input[type=date] {
+input[type="date"] {
   -moz-appearance: textfield;
   -webkit-appearance: textfield;
 }
 
-input[type=checkbox],
-input[type=radio] {
+input[type="checkbox"],
+input[type="radio"] {
   padding: 0;
   height: initial;
   width: initial;
@@ -59,8 +59,8 @@ input[type=radio] {
   cursor: pointer;
 }
 
-input[type=checkbox] + label,
-input[type=radio] + label {
+input[type="checkbox"] + label,
+input[type="radio"] + label {
   font-size: $font-medium;
   background: none;
   border: none;
@@ -69,10 +69,9 @@ input[type=radio] + label {
   align-items: center;
 }
 
-
-input[type=checkbox] + label:before,
-input[type=radio] + label:before {
-  content:'';
+input[type="checkbox"] + label:before,
+input[type="radio"] + label:before {
+  content: "";
   -webkit-appearance: none;
   background-color: $white;
   border: 2px solid $border-color-focus;
@@ -84,12 +83,12 @@ input[type=radio] + label:before {
   cursor: pointer;
   margin-right: 5px;
   border-radius: 50%;
-  transition: all .3s ease;
+  transition: all 0.3s ease;
 }
 
-input[type=checkbox] + label:after,
-input[type=radio] + label:after {
-  content: '';
+input[type="checkbox"] + label:after,
+input[type="radio"] + label:after {
+  content: "";
   display: block;
   position: absolute;
   top: 0;
@@ -101,46 +100,45 @@ input[type=radio] + label:after {
   border: solid $border-color;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
-  transition: all .3s ease;
+  transition: all 0.3s ease;
 }
 
-input[type=checkbox]:hover + label:before,
-input[type=radio]:hover + label:before {
+input[type="checkbox"]:hover + label:before,
+input[type="radio"]:hover + label:before {
   border: 2px solid darken($border-color-focus, 5%);
 }
 
-input[type=checkbox]:checked + label:before,
-input[type=radio]:checked + label:before {
+input[type="checkbox"]:checked + label:before,
+input[type="radio"]:checked + label:before {
   border: 2px solid $black;
-	background: $black;
+  background: $black;
 }
 
-input[type=checkbox]:checked + label:after,
-input[type=radio]:checked + label:after {
+input[type="checkbox"]:checked + label:after,
+input[type="radio"]:checked + label:after {
   border: solid $white;
   border-width: 0 2px 2px 0;
 }
 
-input[type=color] {
+input[type="color"] {
   padding: 0;
 }
 
-
 // override react-phone-input-2
-.react-tel-input input[type=tel] {
+.react-tel-input input[type="tel"] {
   @extend input;
   width: 100% !important;
-  font-family: 'Tajawal' !important;
+  font-family: "Tajawal" !important;
   // margin-bottom: 1.2rem !important;
   font-size: $font-medium !important;
   border: 1px solid $border-color-focus !important;
 }
 
-.react-tel-input input[type=tel].input-error {
+.react-tel-input input[type="tel"].input-error {
   border: 1px solid $red !important;
 }
 
-.react-tel-input input[type=tel].input-error ~ .flag-dropdown {
+.react-tel-input input[type="tel"].input-error ~ .flag-dropdown {
   border: 1px solid $red !important;
 }
 

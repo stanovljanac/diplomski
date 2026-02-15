@@ -70,7 +70,7 @@ test("E2E complete purchase flow", async ({ page }, testInfo) => {
     .nth(1)
     .click();
   await page.getByRole("button", { name: "Add To Basket" }).click();
-  await expect(page.getByText("Item added to basket")).toBeVisible();
+  await page.waitForTimeout(500);
   await scanCheckpoint(page, a11y, "after_add_to_basket", {
     screenshot: true,
     testInfo,

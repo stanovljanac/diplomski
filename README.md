@@ -1,4 +1,16 @@
-# Diplomski rad | WCAG Accessibility
+# Diplomski rad na temu Pristupačnost web aplikacija | Web Accessibility
+
+## Accessibility CI Gate
+
+This repository contains an experimental implementation of
+an automated accessibility CI Gate using:
+
+- GitHub Actions
+- Playwright
+- axe-core
+
+Workflow location:
+.github/workflows/a11y-gate.yml
 
 ## Run Locally
 
